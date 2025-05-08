@@ -32,9 +32,11 @@ public:
     Entity currentObject {entt::null};
     List<Entity> subtitles {};
 
+
     Entity regularFont {entt::null};
     Entity boldFont {entt::null};
     Entity secondaryFont {entt::null};
+    Entity cloudTexture {entt::null};
 
     Lang currentLang {Lang::eng};
 

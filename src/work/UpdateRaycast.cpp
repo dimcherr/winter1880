@@ -4,7 +4,7 @@
 #include "tun/builder.h"
 #include "tun/physics.h"
 #include "comp/Camera.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "comp/BodyComp.h"
 #include "comp/BoxShape.h"
 #include "comp/Model.h"
@@ -16,14 +16,13 @@
 
 void work::UpdateRaycast() {
     using comp::Camera;
-    using comp::Transform;
     using comp::BoxShape;
     using comp::Model;
 
     auto& tooltipBounds = hub::Reg().get<comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
     tooltipBounds.visible = false;
 
-    auto [camera, transform] = hub::Reg().get<Camera, Transform>(hub::Reg().view<tag::Current, Camera, Transform>().back());
+    auto [camera, transform] = hub::Reg().get<Camera, TransformComp>(hub::Reg().view<tag::Current, Camera, TransformComp>().back());
     Vec cameraPos = transform.translation + camera.offset;
 
     Vec forward = glm::normalize(transform.rotation * tun::forward) * 3.f;
@@ -53,7 +52,7 @@ void work::UpdateRaycast() {
     if (hasHit) {
         JPH::BodyID bodyID = hit.mBodyID;
         State::Get().currentObject = entt::null;
-        hub::Reg().view<BodyComp, BoxShape, Model, Transform, comp::Door>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const Transform& modelTransform, comp::Door& door) {
+        hub::Reg().view<BodyComp, BoxShape, Model, TransformComp, comp::Door>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const TransformComp& modelTransform, comp::Door& door) {
             if (!State::Get().firstPerson || body.id != bodyID) return;
 
             auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());

@@ -5,7 +5,7 @@
 #include "Tags.h"
 
 void prefab::PickableBody(Entity entity, Entity modelAsset) {
-    comp::BoxShape& boxShape = GET<comp::BoxShape>(modelAsset);
+    comp::BoxShape& boxShape = hub::Reg().get<comp::BoxShape>(modelAsset);
     hub::Modify(entity)
         .Add<comp::BoxShape>().size(boxShape.size).offset(boxShape.offset).Next()
         .AddComp<BodyComp>({

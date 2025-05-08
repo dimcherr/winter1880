@@ -11,7 +11,8 @@ Entity prefab::Tooltip() {
         .GetEntity();
 
     auto& textWidget = hub::AddComp<TextWidgetComp>(entity, {
-        .text = LangStrings::tooltip,
+        .text = String(LangStrings::tooltip),
+        .langString = &LangStrings::tooltip,
         .font = state.regularFont,
         .color = tun::white,
     });

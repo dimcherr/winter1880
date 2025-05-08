@@ -57,8 +57,3 @@ decltype(auto) Get(Entity entity) {
 }
 
 }
-
-#define GET State::Get().reg.get
-#define GETOneEntity(__viewClasses__) State::Get().reg.view<__viewClasses__>().back()
-#define GETOne(__classes__, __viewClasses__) State::Get().reg.get<__classes__>(State::Get().reg.view<__viewClasses__>().back())
-#define TRYGETOne(__classes__, __viewClasses__) State::Get().reg.try_get<__classes__>(State::Get().reg.view<__viewClasses__>().back())

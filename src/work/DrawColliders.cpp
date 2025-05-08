@@ -3,7 +3,7 @@
 #include "tun/log.h"
 #include "tun/builder.h"
 #include "tun/gl.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "comp/MaterialGrid.h"
 #include "comp/Mesh.h"
 #include "comp/MeshAsset.h"
@@ -18,12 +18,11 @@ void work::DrawColliders() {
     using comp::MeshAsset;
     using comp::BoxShape;
     using comp::CapsuleShape;
-    using comp::Transform;
     using comp::MaterialGrid;
 
     gl::UseGridMaterial();
     
-    hub::Reg().view<BodyComp, BoxShape, Transform>().each([](const BodyComp& body, const BoxShape& shape, const Transform& transform) {
+    hub::Reg().view<BodyComp, BoxShape, TransformComp>().each([](const BodyComp& body, const BoxShape& shape, const TransformComp& transform) {
         auto& state = gl::State();
         const auto& viewProj = hub::GetViewProj();
         Matrix off = glm::translate({1.f}, shape.offset);
@@ -50,7 +49,7 @@ void work::DrawColliders() {
         gl::Draw();
     });
 
-    hub::Reg().view<CapsuleShape, Transform>().each([](const CapsuleShape& shape, const Transform& transform) {
+    hub::Reg().view<CapsuleShape, TransformComp>().each([](const CapsuleShape& shape, const TransformComp& transform) {
         auto& state = gl::State();
         const auto& viewProj = hub::GetViewProj();
         Matrix t = glm::translate({1.f}, transform.translation);

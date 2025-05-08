@@ -3,13 +3,12 @@
 #include "tun/log.h"
 #include "tun/builder.h"
 #include "comp/Camera.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "Tags.h"
 
 void work::UpdateCameraMovement() {
     using comp::Camera;
-    using comp::Transform;
-    auto [camera, transform] = hub::Reg().get<Camera, Transform>(hub::Reg().view<tag::Current, Camera, Transform>().back());
+    auto [camera, transform] = hub::Reg().get<Camera, TransformComp>(hub::Reg().view<tag::Current, Camera, TransformComp>().back());
     if (hub::IsKeyPressed(Key::w)) {
         transform.translation += transform.rotation * tun::forward * camera.movementSpeed * (float)hub::GetDeltaTime();
     }

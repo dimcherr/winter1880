@@ -63,6 +63,20 @@ gl::Image gl::CreateImage(const Bytes& data) {
     return sbasisu_make_image(sg_range {(void*)data.data(), data.size()});
 }
 
+gl::Image gl::CreateImageSimple(StringView path) {
+    int png_width, png_height, num_channels;
+    const int desired_channels = 4;
+    stbi_uc* ptr = stbi_load(path.data(), &png_width, &png_height, &num_channels, desired_channels);
+    sg_image_desc desc {};
+    desc.width = png_width;
+    desc.height = png_height;
+    desc.pixel_format = SG_PIXELFORMAT_RGBA8;
+    desc.data.subimage[0][0] = sg_range { ptr, (size_t)(png_width * png_height * 4) };
+    gl::Image img = sg_make_image(desc);
+    stbi_image_free(ptr);
+    return img;
+}
+
 static gl::GridMaterial CreateGridMaterial() {
     gl::GridMaterial material {};
     gl::Shader shader = sg_make_shader(grid_shader_desc(sg_query_backend()));

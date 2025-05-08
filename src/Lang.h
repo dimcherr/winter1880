@@ -8,13 +8,14 @@ enum class Lang : int {
 
 struct LangString {
     String variants[2] {};
-    String Get() const;
-    operator String() const;
+    StringView Get() const;
+    operator StringView() const;
 };
 
 namespace LangStrings {
     static LangString play {"I am ready", "Я готов"};
     static LangString replay {"Again", "Ещё раз"};
+    static LangString currentLang {"English", "Русский"};
     static LangString tooltip {"Tooltip", "Подсказка"};
     static LangString mouseSense {"Mouse sensitivity", "Чувствительность мыши"};
     static LangString soundVolume {"Sound Volume", "Громкость звуков"};

@@ -1,10 +1,10 @@
 #include "Lang.h"
 #include "State.h"
 
-LangString::operator String() const {
+LangString::operator StringView() const {
     return variants[(int)State::Get().currentLang];
 }
 
-String LangString::Get() const {
+StringView LangString::Get() const {
     return variants[(int)State::Get().currentLang];
 }

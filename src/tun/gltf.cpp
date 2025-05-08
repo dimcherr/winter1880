@@ -3,7 +3,7 @@
 #include "tun/builder.h"
 #include "comp/Mesh.h"
 #include "comp/Model.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "comp/Door.h"
 #include "comp/MeshAsset.h"
 #include "comp/ModelAsset.h"
@@ -11,7 +11,7 @@
 #include "comp/MaterialColor.h"
 #include "comp/MaterialPBR.h"
 #include "comp/TextureAsset.h"
-#include "comp/PointLight.h"
+#include "comp/PointLightComp.h"
 #include "comp/BoxShape.h"
 #include "comp/BodyComp.h"
 #include "prefab/PhysicsSceneLib.h"
@@ -34,7 +34,7 @@ List<ModelDesc> modelDescs {
 
 static void Process(cgltf_data* data);
 static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unordered_map<cgltf_mesh*, Entity>& modelAssets, std::unordered_map<cgltf_primitive*, Entity>& meshAssets);
-static void FlattenTransformHierarchy(comp::Transform& transform, const comp::Transform& parentTransform);
+static void FlattenTransformHierarchy(TransformComp& transform, const TransformComp& parentTransform);
 static gltf::Data LoadInternal(StringView path);
 
 void gltf::Load(StringView path) {
@@ -255,10 +255,10 @@ static void Process(cgltf_data* data) {
         }
     }
 
-    hub::Reg().view<comp::Transform>().each([](comp::Transform& transform) {
+    hub::Reg().view<TransformComp>().each([](TransformComp& transform) {
         if (!hub::Reg().valid(transform.parent)) {
             for (Entity child : transform.children) {
-                if (auto* childTransform = hub::Reg().try_get<comp::Transform>(child)) {
+                if (auto* childTransform = hub::Reg().try_get<TransformComp>(child)) {
                     FlattenTransformHierarchy(*childTransform, transform);
                 }
             }
@@ -272,14 +272,13 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
     if (node.mesh) {
         modelEntity = hub::Create()
             .Add<comp::Model>().modelAsset(modelAssets[node.mesh]).Next()
-            .Add<comp::Transform>()
-                .pos({node.translation[0], node.translation[1], -node.translation[2]})
-                .rot({node.rotation[3], -node.rotation[0], -node.rotation[1], node.rotation[2]})
-                .scale({node.scale[0], node.scale[1], node.scale[2]}) 
-                .parent(parentEntity)
-                .update()
-                .Next()
             .GetEntity();
+        auto& modelTransform = hub::AddComp<TransformComp>(modelEntity);
+        modelTransform.translation = {node.translation[0], node.translation[1], -node.translation[2]};
+        modelTransform.rotation = {node.rotation[3], -node.rotation[0], -node.rotation[1], node.rotation[2]};
+        modelTransform.scale = {node.scale[0], node.scale[1], node.scale[2]};
+        modelTransform.SetParent(modelEntity, parentEntity);
+        modelTransform.Update();
 
         if (node.name) {
             StringView nodeName = StringView(node.name);
@@ -311,22 +310,21 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
         static int lightIndex = 0;
         ++lightIndex;
         modelEntity = hub::Create()
-            .Add<comp::PointLight>()
-                .color(colors[lightIndex % 4])
-                .intensity(node.light->intensity * 0.0001f)
-                .range(5.f)
-                .Next()
             .Add<comp::MaterialColor>()
                 .color(colors[lightIndex % 4])
                 .Next()
-            .Add<comp::Transform>()
-                .pos({node.translation[0], node.translation[1], -node.translation[2]})
-                .rot({node.rotation[3], -node.rotation[0], -node.rotation[1], node.rotation[2]})
-                .scale({node.scale[0], node.scale[1], node.scale[2]}) 
-                .parent(parentEntity)
-                .update()
-                .Next()
             .GetEntity();
+        auto& lightTransform = hub::AddComp<TransformComp>(modelEntity);
+        lightTransform.translation = {node.translation[0], node.translation[1], -node.translation[2]};
+        lightTransform.rotation = {node.rotation[3], -node.rotation[0], -node.rotation[1], node.rotation[2]};
+        lightTransform.scale = {node.scale[0], node.scale[1], node.scale[2]};
+        lightTransform.SetParent(modelEntity, parentEntity);
+        lightTransform.Update();
+
+        auto& pointLight = hub::AddComp<PointLightComp>(modelEntity);
+        pointLight.color = colors[lightIndex % 4];
+        pointLight.intensity = node.light->intensity * 0.0001f;
+        pointLight.range = 5.f;
     }
     
     for (int i = 0; i < node.children_count; ++i) {
@@ -335,13 +333,13 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
     }
 }
 
-static void FlattenTransformHierarchy(comp::Transform& transform, const comp::Transform& parentTransform) {
+static void FlattenTransformHierarchy(TransformComp& transform, const TransformComp& parentTransform) {
     transform.transform = parentTransform.transform * transform.transform;
     transform.translation = parentTransform.translation + transform.translation;
     transform.scale = parentTransform.scale * transform.scale;
     transform.rotation = parentTransform.rotation * transform.rotation;
     for (Entity child : transform.children) {
-        if (auto* childTransform = hub::Reg().try_get<comp::Transform>(child)) {
+        if (auto* childTransform = hub::Reg().try_get<TransformComp>(child)) {
             FlattenTransformHierarchy(*childTransform, transform);
         }
     }

@@ -52,6 +52,7 @@ layout(binding=1) uniform pbr_fs_params {
     float roughnessFactor;
     vec3 emissiveColor;
     float ambientFactor;
+    float time;
 
     int pointLightCount;
     vec4 pointLightPos[MAX_POINT_LIGHTS];
@@ -62,6 +63,7 @@ layout(binding=0) uniform sampler smp;
 layout(binding=0) uniform texture2D albedoMap;
 layout(binding=1) uniform texture2D normalMap;
 layout(binding=2) uniform texture2D ormMap;
+layout(binding=3) uniform texture2D cloudTex;
 
 in vec3 fragPos;
 in vec2 fragTexCoord;
@@ -115,15 +117,36 @@ vec3 ComputePBR() {
         vec3 L = normalize(pointLightPos[i].xyz - fragPos);      // Compute light vector
         vec3 H = normalize(V + L);                                  // Compute halfway bisecting vector
         float dist = length(pointLightPos[i].xyz - fragPos);     // Compute distance to light
+
+        float lx = max(abs(L.x), 0.0001);
+        float lz = max(abs(L.z), 0.0001);
+        float lr = atan(lz, lx);
+        float lalpha = (lr + PI) / (2.0 * PI);
+        float sampledLAlpha = texture(sampler2D(cloudTex, smp), vec2(lr * 0.1, time)).r;
+        //sampledLAlpha = clamp(sampledLAlpha, 0.5, 1.0);
+
+        //dist = max(1.f, dist);
+
+        //dist = mix(0.f, dist, sampledLAlpha);
+        float multip = sampledLAlpha + sin(lalpha + time) * 10.0;
+        //multip = sin(lalpha) * 0.1;
+
         //dist = min(dist, 3.f);
-        //float attenuation = pointLightPos[i].a / (dist * dist * dist);                   // Compute attenuation
-        //float attenuation = pointLightPos[i].a / (dist * dist * 0.3f);                   // Compute attenuation
-        dist = clamp(dist, 0.f, 7.f);
-        float attenuation = mix(10.f, 0.f, dist / 7.f);
+        //float attenuation = (multip * 0.000001 + pointLightPos[i].a) / (dist * dist * dist);                   // Compute attenuation
+        //float maxL = 7.f + sampledLAlpha * 2.0 + sin(time * 3.0) * abs(sin(lr + time * 10.0)) * 0.1 + multip * 0.0000001;
+        float magic = sin(time * 3.0) * abs(sin(lr + sin(L.y) + time * 10.0)) * 0.3;
+        float maxL = 2.f + magic + multip * 0.0000001;
+        //dist = clamp(dist, 0.f, maxL);
+        //attenuation = mix(100.f, 0.f, dist / maxL);
+
+        float attenuation = pointLightPos[i].a / (dist * dist * 0.27);                   // Compute attenuation
+        attenuation = pow(attenuation, maxL);
+        attenuation = clamp(attenuation, 0.0, 1.0);
+        //float attenuation = sampledLAlpha;
         //if (dist > 7.f) {
             //attenuation = 0.f;
         //}
-        vec3 radiance = pointLightColor[i].rgb * pointLightColor[i].a * attenuation; // Compute input radiance, light energy comming in
+        vec3 radiance = mix(vec3(0.9, 0.3, 0.0) * pointLightColor[i].a * attenuation, pointLightColor[i].rgb * pointLightColor[i].a * attenuation, clamp(attenuation, 0.0, 1.0)) * pointLightColor[i].rgb; // Compute input radiance, light energy comming in
         //float attenuation = 1.0 / (dist * dist * 0.23);                   // Compute attenuation
         //vec3 radiance = pointLightColor[i].rgb * 1.0 * attenuation; // Compute input radiance, light energy comming in
 

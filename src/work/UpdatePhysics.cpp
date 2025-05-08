@@ -4,7 +4,7 @@
 #include "tun/builder.h"
 #include "tun/tunrandom.h"
 #include "tun/physics.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "comp/BodyComp.h"
 #include "comp/BoxShape.h"
 #include "comp/Model.h"
@@ -15,7 +15,6 @@
 #include "Tags.h"
 
 void work::UpdatePhysics() {
-    using comp::Transform;
     using comp::BoxShape;
     using comp::CapsuleShape;
     using comp::Character;
@@ -26,7 +25,7 @@ void work::UpdatePhysics() {
     physState.physicsSystem.Update(hub::GetDeltaTime(), collisionSteps, &physState.tempAllocator, &physState.jobSystem);
 
 
-    hub::Reg().view<Character, Transform, CapsuleShape, Camera, comp::Sound, tag::Current>().each([](Character& character, Transform& transform, CapsuleShape& shape, Camera& camera, comp::Sound& sound) {
+    hub::Reg().view<Character, TransformComp, CapsuleShape, Camera, comp::Sound, tag::Current>().each([](Character& character, TransformComp& transform, CapsuleShape& shape, Camera& camera, comp::Sound& sound) {
         if (!character.character) {
             JPH::CharacterVirtualSettings settings {};
             settings.mShape = new JPH::CapsuleShape(shape.halfHeight, shape.radius);
@@ -105,7 +104,7 @@ void work::UpdatePhysics() {
 
             // update pickable position
             if (hub::Reg().valid(character.pickable)) {
-                auto [pickableTransform, pickableBody] = hub::Reg().get<comp::Transform, BodyComp>(character.pickable);
+                auto [pickableTransform, pickableBody] = hub::Reg().get<TransformComp, BodyComp>(character.pickable);
                 Vec forwardVector = glm::normalize(transform.rotation * tun::forward) * 1.5f;
                 Vec desiredLocation = transform.translation + camera.offset * 0.5f + forwardVector;
                 Vec currentBodyLocation = Convert(phys::State::Get().physicsSystem.GetBodyInterface().GetPosition(pickableBody.id));
@@ -119,7 +118,7 @@ void work::UpdatePhysics() {
         }
     });
 
-    hub::Reg().view<BoxShape, BodyComp, Transform>().each([](BoxShape& shape, BodyComp& body, Transform& transform) {
+    hub::Reg().view<BoxShape, BodyComp, TransformComp>().each([](BoxShape& shape, BodyComp& body, TransformComp& transform) {
         auto& bodyInterface = phys::State::Get().physicsSystem.GetBodyInterface();
         if (body.id.IsInvalid()) {
             Vec shapeSize = shape.size * transform.scale * 0.5f;
@@ -135,7 +134,7 @@ void work::UpdatePhysics() {
         }
     });
 
-    hub::Reg().view<CapsuleShape, BodyComp, Transform>().each([](CapsuleShape& shape, BodyComp& body, Transform& transform) {
+    hub::Reg().view<CapsuleShape, BodyComp, TransformComp>().each([](CapsuleShape& shape, BodyComp& body, TransformComp& transform) {
         auto& bodyInterface = phys::State::Get().physicsSystem.GetBodyInterface();
         if (body.id.IsInvalid()) {
             JPH::BodyCreationSettings settings(
@@ -150,7 +149,7 @@ void work::UpdatePhysics() {
         }
     });
 
-    hub::Reg().view<BodyComp, Transform, comp::Model>().each([](BodyComp& body, Transform& transform, comp::Model& model) {
+    hub::Reg().view<BodyComp, TransformComp, comp::Model>().each([](BodyComp& body, TransformComp& transform, comp::Model& model) {
         auto& bodyInterface = phys::State::Get().physicsSystem.GetBodyInterface();
         if (!model.active) {
             bodyInterface.DeactivateBody(body.id);

@@ -25,5 +25,7 @@ void DrawMenu();
 void UpdateCountdown();
 void DrawSliders();
 void UpdateSubtitles();
+void UpdateLanguage();
+void UpdateFlashlight();
 
 }

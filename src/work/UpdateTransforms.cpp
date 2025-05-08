@@ -2,17 +2,15 @@
 #include "tun/math.h"
 #include "tun/log.h"
 #include "tun/builder.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 
-static void UpdateWorldTransform(comp::Transform& transform, const comp::Transform& parentTransform);
+static void UpdateWorldTransform(TransformComp& transform, const TransformComp& parentTransform);
 
 void work::UpdateTransforms() {
-    using comp::Transform;
-
-    hub::Reg().view<Transform>().each([](Transform& transform) {
+    hub::Reg().view<TransformComp>().each([](TransformComp& transform) {
         if (!hub::Reg().valid(transform.parent)) {
             for (Entity child : transform.children) {
-                if (auto* childTransform = hub::Reg().try_get<comp::Transform>(child)) {
+                if (auto* childTransform = hub::Reg().try_get<TransformComp>(child)) {
                     UpdateWorldTransform(*childTransform, transform);
                 }
             }
@@ -20,9 +18,9 @@ void work::UpdateTransforms() {
     });
 }
 
-static void UpdateWorldTransform(comp::Transform& transform, const comp::Transform& parentTransform) {
+static void UpdateWorldTransform(TransformComp& transform, const TransformComp& parentTransform) {
     for (Entity child : transform.children) {
-        if (auto* childTransform = hub::Reg().try_get<comp::Transform>(child)) {
+        if (auto* childTransform = hub::Reg().try_get<TransformComp>(child)) {
             UpdateWorldTransform(*childTransform, transform);
         }
     }

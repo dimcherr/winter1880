@@ -5,6 +5,7 @@
 
 struct TextWidgetComp {
     String text {};
+    LangString* langString {};
     Entity font {entt::null};
     Color color {};
 };

@@ -3,14 +3,14 @@
 #include "tun/log.h"
 #include "tun/builder.h"
 #include "tun/gl.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "comp/MaterialPBR.h"
 #include "comp/Mesh.h"
 #include "comp/MeshAsset.h"
 #include "comp/TextureAsset.h"
 #include "comp/Model.h"
 #include "comp/ModelAsset.h"
-#include "comp/PointLight.h"
+#include "comp/PointLightComp.h"
 #include "pbr.glsl.h"
 
 void work::DrawPBR() {
@@ -19,9 +19,7 @@ void work::DrawPBR() {
     using comp::ModelAsset;
     using comp::MeshAsset;
     using comp::MaterialPBR;
-    using comp::Transform;
     using comp::TextureAsset;
-    using comp::PointLight;
 
     gl::UsePBRMaterial();
 
@@ -29,7 +27,7 @@ void work::DrawPBR() {
         auto& state = gl::State();
         const auto& viewProj = hub::GetViewProj();
         const auto& viewPos = hub::GetViewPos();
-        auto& transform = hub::Reg().get<Transform>(mesh.model);
+        auto& transform = hub::Reg().get<TransformComp>(mesh.model);
         auto& model = hub::Reg().get<comp::Model>(mesh.model);
         if (!model.active || !model.visible) return;
 
@@ -47,10 +45,11 @@ void work::DrawPBR() {
 
         state.pbrMaterial.fsParams.offset = {0.f, 0.f};
         state.pbrMaterial.fsParams.tiling = {1.f, 1.f};
+        state.pbrMaterial.fsParams.time = hub::GetTime() * 0.3f;
 
         state.pbrMaterial.fsParams.pointLightCount = 0;
         int pointLightIndex = 0;
-        hub::Reg().view<PointLight, Transform>().each([&pointLightIndex, &entity](Entity lightEntity, PointLight& light, Transform& lightTransform) {
+        hub::Reg().view<PointLightComp, TransformComp>().each([&pointLightIndex, &entity](Entity lightEntity, PointLightComp& light, TransformComp& lightTransform) {
             auto& state = gl::State();
             if (pointLightIndex < 30) {
                 state.pbrMaterial.fsParams.pointLightColor[pointLightIndex] = Vec4(light.color, light.intensity);
@@ -64,6 +63,7 @@ void work::DrawPBR() {
         state.bindings.images[IMG_albedoMap] = hub::Reg().get<TextureAsset>(material.baseColorTexture).image;
         state.bindings.images[IMG_normalMap] = hub::Reg().get<TextureAsset>(material.normalTexture).image;
         state.bindings.images[IMG_ormMap] = hub::Reg().get<TextureAsset>(material.ormTexture).image;
+        state.bindings.images[IMG_cloudTex] = hub::Reg().get<TextureAsset>(State::Get().cloudTexture).image;
 
         auto& meshAsset = hub::Get<MeshAsset>(mesh.asset);
         gl::UseMesh(meshAsset.vertexBuffer, meshAsset.indexBuffer, meshAsset.elementCount);

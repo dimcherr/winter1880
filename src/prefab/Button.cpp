@@ -3,7 +3,7 @@
 #include "comp/TextWidgetComp.h"
 #include "Tags.h"
 
-Entity prefab::Button(const LangString& text, void(*onClick)(Entity), int uiSlot) {
+Entity prefab::Button(LangString* text, void(*onClick)(Entity), int uiSlot) {
     auto& state = State::Get();
 
     Entity entity = hub::Create()
@@ -11,7 +11,8 @@ Entity prefab::Button(const LangString& text, void(*onClick)(Entity), int uiSlot
         .GetEntity();
 
     auto& textWidget = hub::AddComp<TextWidgetComp>(entity, {
-        .text = text,
+        .text = String(*text),
+        .langString = text,
         .font = state.regularFont,
         .color = tun::orange,
     });

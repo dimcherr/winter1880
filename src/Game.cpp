@@ -1,13 +1,14 @@
 #include "Game.h"
 #include "Hub.h"
 #include "comp/Mesh.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "comp/MaterialGrid.h"
 #include "comp/Subtitle.h"
 #include "comp/Model.h"
 #include "comp/SliderWidget.h"
 #include "comp/MaterialColor.h"
 #include "comp/Camera.h"
+#include "comp/TextureAsset.h"
 #include "comp/Countdown.h"
 #include "comp/BoxShape.h"
 #include "comp/Door.h"
@@ -15,6 +16,7 @@
 #include "comp/Character.h"
 #include "comp/Music.h"
 #include "comp/Sound.h"
+#include "comp/FlashlightComp.h"
 #include "prefab/UIPrefabLib.h"
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
@@ -28,6 +30,7 @@
 #include "tun/sound.h"
 #include "work/Work.h"
 #include "prefab/Prefab.h"
+#include "prefab/GameplayPrefab.h"
 #ifdef OS_WEB
 #include <emscripten.h>
 #endif
@@ -58,6 +61,10 @@ void game::Create() {
     state.regularFont = prefab::Font("res/fonts/Serati.ttf", 32.f);
     state.boldFont = state.regularFont;
     state.secondaryFont = state.regularFont;
+
+    state.cloudTexture = hub::Create()
+        .Add<comp::TextureAsset>().image(gl::CreateImageSimple("res/textures/cloud1.png")).Next()
+        .GetEntity();
     //state.boldFont = prefab::Font("res/fonts/Serati.ttf", 64.f);
     //state.secondaryFont = prefab::Font("res/fonts/M6.ttf", 24.f);
 
@@ -72,14 +79,18 @@ void game::Create() {
 
     Entity tooltip = prefab::Tooltip();
 
-    Entity buttonPlay = prefab::Button(LangStrings::play, &OnClickPlayButton, 0);
+    Entity buttonPlay = prefab::Button(&LangStrings::play, &OnClickPlayButton, 0);
     hub::AddTag<tag::Menu>(buttonPlay);
 
-    Entity sliderMouseSense = prefab::Slider(LangStrings::mouseSense, 0.5f, SliderType::mouse, 1);
-    Entity sliderSoundVolume = prefab::Slider(LangStrings::soundVolume, 1.f, SliderType::sound, 2);
-    Entity sliderMusicVolume = prefab::Slider(LangStrings::musicVolume, 0.75f, SliderType::music, 3);
+    Entity sliderMouseSense = prefab::Slider(&LangStrings::mouseSense, 0.5f, SliderType::mouse, 1);
+    Entity sliderSoundVolume = prefab::Slider(&LangStrings::soundVolume, 1.f, SliderType::sound, 2);
+    Entity sliderMusicVolume = prefab::Slider(&LangStrings::musicVolume, 0.75f, SliderType::music, 3);
 
-    Entity buttonReplay = prefab::Button(LangStrings::replay, &RestartGame, 0);
+    Entity buttonChangeLanguage = prefab::Button(&LangStrings::currentLang, [](Entity entity) { work::UpdateLanguage(); }, 4);
+    hub::AddTag<tag::Menu>(buttonChangeLanguage);
+
+    Entity buttonReplay = prefab::Button(&LangStrings::replay, &RestartGame, 0);
+    hub::Reg().get<comp::BoundsWidget>(buttonReplay).visible = false;
 
     prefab::CameraFly({0.f, 10.f, 10.f}, tun::vecZero);
 
@@ -89,11 +100,15 @@ void game::Create() {
         .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).Next()
         .Tag<tag::FirstPerson>()
         .Tag<tag::Current>()
-        .Add<comp::Transform>().pos({5.38f, 4.85f, -7.6f}).rot(0.f, 0.f, 0.f).update().Next()
         .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(300.f, 600.f).jumpStrength(300.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
         .Add<comp::Sound>().foleys("res/sounds/steps/step", 3).Next()
         .GetEntity();
+    auto& characterTransform = hub::AddComp<TransformComp>(character);
+    characterTransform.translation = {5.38f, 4.85f, -7.6f};
+    characterTransform.Update();
+    
+    Entity flashlight = prefab::Flashlight();
     
     Entity backgroundMusic = hub::Create()
         .Add<comp::Music>().path("res/sounds/theme.ogg").volume(0.5f).Next()
@@ -104,8 +119,8 @@ void game::Create() {
         .Tag<tag::MenuMusic>()
         .GetEntity();
 
-    State::Get().subtitles.push_back(prefab::Subtitle(LangStrings::testSubtitle0, 1.f));
-    State::Get().subtitles.push_back(prefab::Subtitle(LangStrings::testSubtitle1, 4.f));
+    State::Get().subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle0, 1.f));
+    State::Get().subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle1, 4.f));
 
     work::SetMusicPlaying(false);
     State::Get().paused = true;
@@ -121,6 +136,7 @@ void game::Update() {
         work::UpdateDoors();
         work::UpdatePhysics();
         work::UpdateCountdown();
+        work::UpdateFlashlight();
     }
 
     work::UpdateTransforms();
@@ -143,9 +159,9 @@ void game::Update() {
     work::UpdateCamera();
 
     gl::BeginRenderPass({0.85f, 0.5f, 0.5f});
-    work::DrawGrid();
-    work::DrawLights();
-    work::DrawColliders();
+    //work::DrawGrid();
+    //work::DrawLights();
+    //work::DrawColliders();
     work::DrawPBR();
 
     if (gl::BeginDrawUI()) {
@@ -207,10 +223,6 @@ void game::OnEvent(const sapp_event* event) {
 
 void game::OnKeyDown(Key key) {
     auto& state = State::Get();
-    //if (key == Key::v) {
-        //work::SwitchCamera();
-    //}
-
     if (key == Key::tab) {
         state.paused = !state.paused;
         work::SetMusicPlaying(!state.paused);
@@ -218,6 +230,17 @@ void game::OnKeyDown(Key key) {
         return;
     }
     if (state.paused) return;
+
+
+    //if (key == Key::v) {
+        //work::SwitchCamera();
+    //}
+    if (key == Key::f) {
+        hub::Reg().view<FlashlightComp>().each([](FlashlightComp& flashlight) {
+            flashlight.SetTurnedOn(flashlight.enabled < 0.5f);
+        });
+    }
+
     if (key == Key::e && state.firstPerson) {
         auto* door = hub::Reg().try_get<comp::Door>(state.currentObject);
         if (door) {

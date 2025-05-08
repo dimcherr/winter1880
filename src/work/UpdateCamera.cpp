@@ -3,14 +3,13 @@
 #include "tun/log.h"
 #include "tun/builder.h"
 #include "comp/Camera.h"
-#include "comp/Transform.h"
+#include "comp/TransformComp.h"
 #include "Tags.h"
 
 void work::UpdateCamera() {
     using comp::Camera;
-    using comp::Transform;
 
-    auto [camera, transform] = hub::Reg().get<Camera, Transform>(hub::Reg().view<tag::Current, Camera, Transform>().back());
+    auto [camera, transform] = hub::Reg().get<Camera, TransformComp>(hub::Reg().view<tag::Current, Camera, TransformComp>().back());
     const auto& screenSize = hub::GetScreenSize();
     camera.Update(screenSize.x, screenSize.y);
     transform.rotation = Quat({camera.pitch, camera.yaw, 0.f});

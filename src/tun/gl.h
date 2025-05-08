@@ -59,6 +59,7 @@ void SetupRenderer();
 Buffer CreateVertexBuffer(const List<float>& vertices);
 Buffer CreateIndexBuffer(const List<uint16_t>& indices);
 Image CreateImage(const Bytes& data);
+Image CreateImageSimple(StringView path);
 void BeginRenderPass(Color clearColor);
 void UpdateBindings();
 void Draw();

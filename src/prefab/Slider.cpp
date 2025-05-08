@@ -3,7 +3,7 @@
 #include "comp/TextWidgetComp.h"
 #include "comp/SliderWidget.h"
 
-Entity prefab::Slider(const LangString& text, float value, SliderType sliderType, int uiSlot) {
+Entity prefab::Slider(LangString* text, float value, SliderType sliderType, int uiSlot) {
     auto& state = State::Get();
     Entity entity = hub::Create()
         .Add<comp::BoundsWidget>().visible(true).color(tun::black, 0.75f).minSize({512.f, 64.f}).pos({0.f, uiSlot * 72.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
@@ -11,7 +11,8 @@ Entity prefab::Slider(const LangString& text, float value, SliderType sliderType
         .GetEntity();
 
     auto& textWidget = hub::AddComp<TextWidgetComp>(entity, {
-        .text = text,
+        .text = String(*text),
+        .langString = text,
         .font = state.secondaryFont,
         .color = tun::white,
     });
