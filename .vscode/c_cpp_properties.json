@@ -1,0 +1,53 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "DEBUG"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "${workspaceFolder}/libs/**",
+                    "${workspaceFolder}/build/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true,  // Important for limiting to included headers only
+                "databaseFilename": ""
+            },
+            "windowsSdkVersion": "10.0.22621.0",
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "cStandard": "c99",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Emscripten",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/raylib/emsdk/upstream/emscripten/cache/sysroot/include"
+            ],
+            "defines": [
+                "DEBUG",
+                "OS_WEB"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true,  // Important for limiting to included headers only
+                "databaseFilename": ""
+            },
+            "windowsSdkVersion": "10.0.22621.0",
+            "compilerPath": "C:/raylib/emsdk/upstream/emscripten/em++.bat",
+            "cStandard": "c99",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}

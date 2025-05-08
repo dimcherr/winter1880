@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug FourthPiglet",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/output/FourthPigletWinDebug.exe", // Path to your executable
+            "args": [], // Command-line arguments (if any)
+            "stopAtEntry": false, // Set to true to pause at main()
+            "cwd": "${workspaceFolder}", // Working directory
+            "environment": [],
+            "externalConsole": false, // Set to true for external terminal
+            "MIMode": "gdb", // Use "gdb" or "lldb" depending on your setup
+            "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe", // Path to debugger (adjust if needed)
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "BuildFourthPigletWinDebug",
+        }
+    ]
+}

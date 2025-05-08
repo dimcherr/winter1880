@@ -1,0 +1,12 @@
+#define SOKOL_DEBUG
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define CGLTF_IMPLEMENTATION
+#include "cgltf.h"
+#define SOKOL_IMPL
+#include "imgui/imgui.h"
+#include "sokol_app.h"
+#include "sokol_log.h"
+#include "sokol_gfx.h"
+#include "sokol_imgui.h"
+#include "sokol_time.h"

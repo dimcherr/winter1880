@@ -1,0 +1,10 @@
+build/
+output/
+__pycache__/
+shaders/*.h
+.ninja_log
+.ninja_lock
+*.ninja
+assets/
+*.log
+glb.json

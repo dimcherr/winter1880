@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "BuildFourthPigletWinDebug",
+            "type": "shell",
+            "command": "bash scripts/build.sh FourthPiglet Win Debug",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$gcc"
+        }
+        
+    ]
+}
