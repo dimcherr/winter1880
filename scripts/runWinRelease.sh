@@ -1,1 +1,1 @@
-bash scripts/build.sh FourthPiglet Win Release && bash scripts/run.sh FourthPigletWinRelease.exe
+bash scripts/build.sh Winter1880 Win Release && bash scripts/run.sh Winter1880WinRelease.exe

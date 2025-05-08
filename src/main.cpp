@@ -13,7 +13,8 @@ sapp_desc sokol_main(int argc, char* argv[]) {
     desc.width = 1920;
     desc.height = 1080;
     desc.sample_count = 4;
-    desc.window_title = "Fourth Piglet";
+    desc.fullscreen = false;
+    desc.window_title = "Winter 1880";
     desc.icon.sokol_default = true;
     desc.logger.func = slog_func;
     desc.html5_bubble_mouse_events = true;

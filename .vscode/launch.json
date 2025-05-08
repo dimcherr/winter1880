@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug FourthPiglet",
+            "name": "Debug Winter1880",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/output/FourthPigletWinDebug.exe", // Path to your executable
+            "program": "${workspaceFolder}/output/Winter1880WinDebug.exe", // Path to your executable
             "args": [], // Command-line arguments (if any)
             "stopAtEntry": false, // Set to true to pause at main()
             "cwd": "${workspaceFolder}", // Working directory
@@ -23,7 +23,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "BuildFourthPigletWinDebug",
+            "preLaunchTask": "BuildWinter1880WinDebug",
         }
     ]
 }

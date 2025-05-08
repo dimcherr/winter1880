@@ -72,7 +72,7 @@ void game::Create() {
     Entity rect = prefab::Rect();
     Entity grid = prefab::Grid();
     gltf::LoadPrims("res/models/Prims.glb");
-    gltf::Load("res/models/FourthPiglet.glb");
+    gltf::Load("res/models/Winter1880.glb");
 
 
 
@@ -117,7 +117,7 @@ void game::Create() {
         .Tag<tag::GameMusic>()
         .GetEntity();
     Entity backgroundMusicMenu = hub::Create()
-        .Add<comp::Music>().path("res/sounds/FourthPigletOstMenu.ogg").volume(0.5f).Next()
+        .Add<comp::Music>().path("res/sounds/WinterOstMenu.ogg").volume(0.5f).Next()
         .Tag<tag::MenuMusic>()
         .GetEntity();
     Entity hruSound = hub::Create()

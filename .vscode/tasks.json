@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "BuildFourthPigletWinDebug",
+            "label": "BuildWinter1880WinDebug",
             "type": "shell",
-            "command": "bash scripts/build.sh FourthPiglet Win Debug",
+            "command": "bash scripts/build.sh Winter1880 Win Debug",
             "group": "build",
             "presentation": {
                 "reveal": "always"
