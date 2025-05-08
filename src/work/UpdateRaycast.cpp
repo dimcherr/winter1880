@@ -10,8 +10,6 @@
 #include "comp/Model.h"
 #include "comp/BoundsWidget.h"
 #include "comp/TextWidget.h"
-#include "comp/BrickWallKey.h"
-#include "comp/BrickWall.h"
 #include "comp/Door.h"
 #include "comp/Character.h"
 #include "Tags.h"
@@ -55,65 +53,6 @@ void work::UpdateRaycast() {
     if (hasHit) {
         JPH::BodyID bodyID = hit.mBodyID;
         State::Get().currentObject = entt::null;
-        hub::Reg().view<BodyComp, BoxShape, Model, Transform, comp::BrickWall>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const Transform& modelTransform, comp::BrickWall& brickWall) {
-            if (!State::Get().firstPerson || body.id != bodyID) return;
-            auto& character = hub::Reg().get<comp::Character>(hub::Reg().view<comp::Character, tag::Current>().back());
-
-            if (brickWall.destroyed) {
-                auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                text.text = "ОБОРУДОВАНИЕ УНИЧТОЖЕНО";
-                text.color = tun::red;
-                bounds.visible = true;
-                bounds.parentAnchors.vertical = tun::center;
-                bounds.pos = {0.f, 128.f};
-                State::Get().currentObject = entity;
-                return;
-            }
-
-            if (hub::Reg().valid(character.pickable)) {
-                auto& brickWallKey = hub::Reg().get<comp::BrickWallKey>(character.pickable);
-                if (brickWall.access[(int)brickWallKey.type].required) {
-                    auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                    text.text = "[E] Получить доступ";
-                    text.color = tun::green;
-                    bounds.visible = true;
-                    bounds.parentAnchors.vertical = tun::center;
-                    bounds.pos = {0.f, 128.f};
-                    State::Get().currentObject = entity;
-                    return;
-                } else if (brickWall.requiredCount > 0) {
-                    auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                    text.text = "КЛЮЧ НЕ ПОДХОДИТ";
-                    text.color = tun::red;
-                    bounds.visible = true;
-                    bounds.parentAnchors.vertical = tun::center;
-                    bounds.pos = {0.f, 128.f};
-                    State::Get().currentObject = entity;
-                    return;
-                }
-            }
-
-            if (brickWall.progress < 100 && brickWall.requiredCount == 0) {
-                auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                text.text = "[E] Войти в систему";
-                text.color = tun::green;
-                bounds.visible = true;
-                bounds.parentAnchors.vertical = tun::center;
-                bounds.pos = {0.f, 128.f};
-                State::Get().currentObject = entity;
-                return;
-            } else if (brickWall.requiredCount > 0) {
-                auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                text.text = "ДОСТУП ЗАКРЫТ";
-                text.color = tun::red;
-                bounds.visible = true;
-                bounds.parentAnchors.vertical = tun::center;
-                bounds.pos = {0.f, 128.f};
-                State::Get().currentObject = entity;
-                return;
-            }
-        });
-
         hub::Reg().view<BodyComp, BoxShape, Model, Transform, comp::Door>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const Transform& modelTransform, comp::Door& door) {
             if (!State::Get().firstPerson || body.id != bodyID) return;
 
@@ -125,30 +64,6 @@ void work::UpdateRaycast() {
                 text.text = "[E] Закрыть";
                 text.color = tun::white;
             }
-            bounds.visible = true;
-            bounds.parentAnchors.vertical = tun::center;
-            bounds.pos = {0.f, 128.f};
-            State::Get().currentObject = entity;
-        });
-
-        hub::Reg().view<BodyComp, BoxShape, Model, Transform, tag::Pickable>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const Transform& modelTransform) {
-            if (!State::Get().firstPerson || body.id != bodyID) return;
-
-            auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-            text.text = "[E] Взять ключ";
-            text.color = tun::white;
-            bounds.visible = true;
-            bounds.parentAnchors.vertical = tun::center;
-            bounds.pos = {0.f, 128.f};
-            State::Get().currentObject = entity;
-        });
-
-        hub::Reg().view<BodyComp, BoxShape, Model, Transform, tag::Kimchi>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const Transform& modelTransform) {
-            if (!State::Get().firstPerson || body.id != bodyID) return;
-
-            auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-            text.text = "[E] Съесть кимчи";
-            text.color = tun::pink;
             bounds.visible = true;
             bounds.parentAnchors.vertical = tun::center;
             bounds.pos = {0.f, 128.f};

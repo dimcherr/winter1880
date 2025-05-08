@@ -14,5 +14,4 @@ void work::UpdateCameraRotation() {
     camera.yaw += mouseDelta.x * camera.rotationSensitivity * State::Get().sensitivityFactor * hub::GetDeltaTime();
     camera.pitch += mouseDelta.y * camera.rotationSensitivity * State::Get().sensitivityFactor * hub::GetDeltaTime();
     camera.pitch = glm::clamp(camera.pitch, glm::radians(-60.f), glm::radians(60.f));
-
 }

@@ -16,8 +16,6 @@ void work::UpdateCountdown() {
         countdown.countdown -= hub::GetDeltaTime();
         if (countdown.countdown < 0.f) {
             countdown.countdown = 0.f;
-            State::Get().win = true;
-            State::Get().gameover = true;
             State::Get().paused = true;
             work::SetMusicPlaying(false);
             hub::LockMouse(false);

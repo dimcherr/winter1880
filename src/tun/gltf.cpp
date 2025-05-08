@@ -2,13 +2,10 @@
 #include "tun/log.h"
 #include "tun/builder.h"
 #include "comp/Mesh.h"
-#include "comp/BrickWallKey.h"
 #include "comp/Model.h"
-#include "comp/Lamp.h"
 #include "comp/Transform.h"
 #include "comp/Door.h"
 #include "comp/MeshAsset.h"
-#include "comp/BrickWall.h"
 #include "comp/ModelAsset.h"
 #include "comp/MaterialGrid.h"
 #include "comp/MaterialColor.h"
@@ -32,27 +29,7 @@ List<ModelDesc> modelDescs {
     {"Decor", [](Entity, Entity) {}},
     {"Static", prefab::StaticBody},
     {"Door", prefab::Door},
-    {"Lamp", prefab::Lamp},
     {"Collision", prefab::Collision},
-    {"Kimchi", prefab::Kimchi},
-    {"BlueKey", [](Entity entity, Entity modelAsset) { prefab::Key(entity, modelAsset, AccessType::blue); }},
-    {"PurpleKey", [](Entity entity, Entity modelAsset) { prefab::Key(entity, modelAsset, AccessType::red); }},
-    {"YellowKey", [](Entity entity, Entity modelAsset) { prefab::Key(entity, modelAsset, AccessType::yellow); }},
-    {"ApplianceBaseHeater", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 0, "Обогреватель"); }},
-    {"ApplianceFirstHeater", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 1, "Обогреватель"); }},
-    {"ApplianceSecondHeater", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 2, "Обогреватель"); }},
-    {"ApplianceBaseVent", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 0, "Кондиционер"); }},
-    {"ApplianceFirstVent", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 1, "Кондиционер"); }},
-    {"ApplianceSecondVent", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 2, "Кондиционер"); }},
-    {"ApplianceBaseWashingMachine", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 0, "Стиральная машина"); }},
-    {"ApplianceBaseWaterHeater", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 0, "Водонагреватель"); }},
-    {"ApplianceFirstElectricJunction", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 1, "Электрощиток"); }},
-    {"ApplianceFirstFireAlarm", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 1, "Пожарная сигнализация"); }},
-    {"ApplianceFirstTV", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 1, "Телевизор"); }},
-    {"ApplianceFirstVideoMonitor", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 1, "Видеонаблюдение"); }},
-    {"ApplianceSecondBoombox", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 2, "Магнитофон"); }},
-    {"ApplianceSecondComputer", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 2, "Компьютер"); }},
-    {"ApplianceSecondWarmFloorDisplay", [](Entity entity, Entity modelAsset) { prefab::Appliance(entity, modelAsset, 2, "Контроллер теплого пола"); }},
 };
 
 static void Process(cgltf_data* data);
@@ -116,15 +93,6 @@ void gltf::LoadPrims(StringView path) {
 
                 if (strcmp(node.name, "Sphere") == 0) {
                     hub::Modify(meshEntity).Tag<tag::CapsuleMesh>();
-                }
-                if (strcmp(node.name, "Piglet") == 0) {
-                    hub::Modify(meshEntity).Tag<tag::PigletMesh>();
-                }
-                if (strcmp(node.name, "Wolf") == 0) {
-                    hub::Modify(meshEntity).Tag<tag::WolfMesh>();
-                }
-                if (strcmp(node.name, "WolfSharp") == 0) {
-                    hub::Modify(meshEntity).Tag<tag::WolfSharpMesh>();
                 }
             }
         }
@@ -359,11 +327,6 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
                 .update()
                 .Next()
             .GetEntity();
-        
-        if (hub::Reg().valid(parentEntity)) {
-            hub::Modify(parentEntity)
-                .Modify<comp::Lamp>().color(colors[lightIndex % 4]).Next();
-        }
     }
     
     for (int i = 0; i < node.children_count; ++i) {

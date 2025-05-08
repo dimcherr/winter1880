@@ -8,7 +8,6 @@
 #include "comp/Mesh.h"
 #include "comp/MeshAsset.h"
 #include "comp/TextureAsset.h"
-#include "comp/Lamp.h"
 #include "comp/Model.h"
 #include "comp/ModelAsset.h"
 #include "comp/PointLight.h"
@@ -43,11 +42,6 @@ void work::DrawPBR() {
         state.pbrMaterial.fsParams.highlight = model.highlight;
         state.pbrMaterial.fsParams.ambientColor = tun::black;
         state.pbrMaterial.fsParams.ambientFactor = 0.001f;
-        if (auto* lamp = hub::Reg().try_get<comp::Lamp>(mesh.model)) {
-            state.pbrMaterial.fsParams.emissiveColor = lamp->color;
-        } else {
-            state.pbrMaterial.fsParams.emissiveColor = tun::black;
-        }
         state.pbrMaterial.fsParams.metallicFactor = 1.f;
         state.pbrMaterial.fsParams.roughnessFactor = 1.f;
 
@@ -58,13 +52,9 @@ void work::DrawPBR() {
         int pointLightIndex = 0;
         hub::Reg().view<PointLight, Transform>().each([&pointLightIndex, &entity](Entity lightEntity, PointLight& light, Transform& lightTransform) {
             auto& state = gl::State();
-            float gameoverFactor = State::Get().gameover && State::Get().lose ? 0.01f : 0.8f;
-            if (State::Get().gameover && State::Get().win) {
-                gameoverFactor = 3.f;
-            }
             if (pointLightIndex < 30) {
-                state.pbrMaterial.fsParams.pointLightColor[pointLightIndex] = Vec4(light.color, light.intensity * gameoverFactor);
-                state.pbrMaterial.fsParams.pointLightPos[pointLightIndex] = Vec4(lightTransform.translation, light.range * gameoverFactor);
+                state.pbrMaterial.fsParams.pointLightColor[pointLightIndex] = Vec4(light.color, light.intensity);
+                state.pbrMaterial.fsParams.pointLightPos[pointLightIndex] = Vec4(lightTransform.translation, light.range);
                 ++state.pbrMaterial.fsParams.pointLightCount;
             }
             ++pointLightIndex;

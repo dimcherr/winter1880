@@ -181,6 +181,5 @@ private:
 };
 
 void Init();
-void Test();
 
 }

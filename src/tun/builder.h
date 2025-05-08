@@ -44,13 +44,6 @@ public:
     EntityBuilder& AddComp(const T& comp) {
         hub::AddComp<T>(this->entity, comp);
         return *this;
-
-        //CompBuilder<T> compBuilder;
-        //T& comp = hub::AddComp<T>(this->entity);
-        //compBuilder.comp = &comp;
-        //compBuilder.entityBuilder = this;
-        //compBuilder.entity = entity;
-        //return compBuilder;
     }
 
     template <typename T>

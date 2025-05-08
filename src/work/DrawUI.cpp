@@ -6,7 +6,6 @@
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
 #include "comp/MeshAsset.h"
-#include "comp/HackerKey.h"
 #include "comp/SliderWidget.h"
 #include "Tags.h"
 
@@ -16,18 +15,9 @@ void work::DrawUI() {
     using comp::BoundsWidget;
     using comp::Font;
 
-    hub::Reg().view<TextWidget, BoundsWidget>(entt::exclude<comp::HackerKey, tag::Menu>).each([](Entity entity, const TextWidget& text, BoundsWidget& bounds) {
+    hub::Reg().view<TextWidget, BoundsWidget>(entt::exclude<tag::Menu>).each([](Entity entity, const TextWidget& text, BoundsWidget& bounds) {
         if (!bounds.visible) return;
         if (hub::Reg().any_of<comp::SliderWidget>(entity)) return;
-
-        if (State::Get().gameover) {
-            if (!hub::Reg().any_of<tag::Win, tag::Lose>(entity)) {
-                return;
-            }
-        }
-        if (!State::Get().firstAttackHappened && hub::Reg().any_of<tag::HealthbarLabel>(entity)) {
-            return;
-        }
 
         if (bounds.timeToActualClick > 0.f && bounds.clickPending) {
             bounds.timeToActualClick -= hub::GetDeltaTime();

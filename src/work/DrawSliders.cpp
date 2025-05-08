@@ -7,7 +7,6 @@
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
 #include "comp/MeshAsset.h"
-#include "comp/HackerKey.h"
 #include "comp/SliderWidget.h"
 #include "Tags.h"
 
@@ -19,12 +18,6 @@ void work::DrawSliders() {
 
     hub::Reg().view<TextWidget, BoundsWidget, comp::SliderWidget>().each([](Entity entity, TextWidget& text, BoundsWidget& bounds, comp::SliderWidget& slider) {
         if (!bounds.visible) return;
-
-        if (State::Get().gameover) {
-            if (!hub::Reg().any_of<tag::Win, tag::Lose>(entity)) {
-                return;
-            }
-        }
 
         if (bounds.timeToActualClick > 0.f && bounds.clickPending) {
             bounds.timeToActualClick -= hub::GetDeltaTime();
@@ -170,13 +163,6 @@ void work::DrawSliders() {
         if (state.mouse[(int)MouseButton::left] && slider.handled) {
             slider.percent += hub::GetDeltaTime() * state.mouseDeltaX;
             slider.percent = glm::clamp(slider.percent, 0.f, 1.f);
-
-            if (slider.type == SliderType::sound) {
-                auto& hruSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::Hru, comp::Sound>().back());
-                if (hruSound.elapsedTime > 0.2f) {
-                    hruSound.Play();
-                }
-            }
         } else {
             slider.handled = false;
         }

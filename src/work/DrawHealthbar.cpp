@@ -6,7 +6,6 @@
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
 #include "comp/MeshAsset.h"
-#include "comp/HackerKey.h"
 #include "tun/tunstring.h"
 #include "comp/Healthbar.h"
 #include "Tags.h"
@@ -16,7 +15,6 @@ void work::DrawHealthbar() {
     using comp::ButtonWidget;
     using comp::BoundsWidget;
     using comp::Font;
-    using comp::HackerKey;
 
     hub::Reg().view<BoundsWidget, comp::Healthbar>().each([](BoundsWidget& bounds, comp::Healthbar& healthbar) {
         if (!bounds.visible) return;

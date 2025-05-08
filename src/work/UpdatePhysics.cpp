@@ -49,10 +49,6 @@ void work::UpdatePhysics() {
             }
 
             if (character.character->GetLinearVelocity().LengthSq() > 10.f && character.character->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround) {
-                auto& hruSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::Hru, comp::Sound>().back());
-                if (hruSound.elapsedTime > hruSound.period) {
-                    hruSound.Play();
-                }
                 if (sound.elapsedTime > sound.period) {
                     static int stepSide = 0;
                     float pan = stepSide * 0.3f - 0.15f + 0.5f;

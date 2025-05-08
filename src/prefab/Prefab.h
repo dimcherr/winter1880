@@ -12,6 +12,5 @@ Entity Grid(float segmentSize = 1.f, int segmentCount = 30, const Color& color =
 Entity Plane();
 Entity Rect();
 Entity Cube();
-Entity PBRModel(Entity meshAsset, const Color& color);
 
 }
