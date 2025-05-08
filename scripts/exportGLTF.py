@@ -17,7 +17,7 @@ try:
         if mesh_count < 2:
             print("making copy of {}".format(obj.name))
             copyobj = obj.copy()
-            copyobj.location.x += 100
+            copyobj.location.x += 500
             bpy.context.scene.collection.objects.link(copyobj)
     argv = sys.argv
     args = {

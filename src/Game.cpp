@@ -65,7 +65,8 @@ void game::Create() {
     Entity rect = prefab::Rect();
     Entity grid = prefab::Grid();
     gltf::LoadPrims("res/models/Prims.glb");
-    gltf::Load("res/models/FourthPiglet.glb");
+    //gltf::Load("res/models/FourthPiglet.glb");
+    gltf::Load("res/models/Winter1880.glb");
 
 
 

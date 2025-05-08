@@ -7,7 +7,7 @@ namespace comp {
 
 struct TextWidget {
     String text {};
-    LangString text {};
+    //;LangString text {};
     Entity font {};
     Color color {};
 };
