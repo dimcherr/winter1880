@@ -21,7 +21,6 @@ void SetMusicPlaying(bool playing);
 void DrawUI();
 void UpdateRaycast();
 void UpdateDoors();
-void DrawHealthbar();
 void DrawMenu();
 void UpdateCountdown();
 void DrawSliders();

@@ -11,7 +11,6 @@ struct CubeMesh {};
 struct CapsuleMesh {};
 struct Tooltip {};
 struct Pickable {};
-struct HealthbarLabel {};
 struct Menu {};
 struct MenuMusic {};
 struct GameMusic {};

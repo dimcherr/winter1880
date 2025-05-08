@@ -1,7 +1,6 @@
 #include "Work.h"
 #include "tun/builder.h"
 #include "comp/Subtitle.h"
-#include "comp/TextWidget.h"
 #include "comp/BoundsWidget.h"
 #include "comp/Sound.h"
 #include "tun/sound.h"

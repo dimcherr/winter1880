@@ -1,7 +1,7 @@
 #include "Work.h"
 #include "tun/math.h"
 #include "tun/builder.h"
-#include "comp/TextWidget.h"
+#include "comp/TextWidgetComp.h"
 #include "comp/ButtonWidget.h"
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
@@ -13,12 +13,11 @@
 #include "Tags.h"
 
 void work::DrawMenu() {
-    using comp::TextWidget;
     using comp::ButtonWidget;
     using comp::BoundsWidget;
     using comp::Font;
 
-    hub::Reg().view<TextWidget, BoundsWidget, tag::Menu>().each([](Entity entity, const TextWidget& text, BoundsWidget& bounds) {
+    hub::Reg().view<TextWidgetComp, BoundsWidget, tag::Menu>().each([](Entity entity, const TextWidgetComp& text, BoundsWidget& bounds) {
         if (!bounds.visible) return;
         if (hub::Reg().any_of<comp::SliderWidget>(entity)) return;
 

@@ -9,7 +9,7 @@
 #include "comp/BoxShape.h"
 #include "comp/Model.h"
 #include "comp/BoundsWidget.h"
-#include "comp/TextWidget.h"
+#include "comp/TextWidgetComp.h"
 #include "comp/Door.h"
 #include "comp/Character.h"
 #include "Tags.h"
@@ -42,7 +42,7 @@ void work::UpdateRaycast() {
     );
 
     if (hub::Reg().valid(character.pickable)) {
-        auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
+        auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
         text.text = "[G] Выбросить ключ";
         text.color = tun::white;
         bounds.visible = true;
@@ -56,7 +56,7 @@ void work::UpdateRaycast() {
         hub::Reg().view<BodyComp, BoxShape, Model, Transform, comp::Door>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const Transform& modelTransform, comp::Door& door) {
             if (!State::Get().firstPerson || body.id != bodyID) return;
 
-            auto [text, bounds] = hub::Reg().get<comp::TextWidget, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
+            auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
             if (door.doorState < 0.5f) {
                 text.text = "[E] Открыть";
                 text.color = tun::white;

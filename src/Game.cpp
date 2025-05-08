@@ -7,7 +7,6 @@
 #include "comp/Model.h"
 #include "comp/SliderWidget.h"
 #include "comp/MaterialColor.h"
-#include "comp/Healthbar.h"
 #include "comp/Camera.h"
 #include "comp/Countdown.h"
 #include "comp/BoxShape.h"
@@ -16,7 +15,7 @@
 #include "comp/Character.h"
 #include "comp/Music.h"
 #include "comp/Sound.h"
-#include "comp/TextWidget.h"
+#include "prefab/UIPrefabLib.h"
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
 #include "comp/ButtonWidget.h"
@@ -57,40 +56,30 @@ void game::Create() {
 
     auto& state = State::Get();
     state.regularFont = prefab::Font("res/fonts/Serati.ttf", 32.f);
-    state.boldFont = prefab::Font("res/fonts/Serati.ttf", 64.f);
-    state.secondaryFont = prefab::Font("res/fonts/M6.ttf", 24.f);
+    state.boldFont = state.regularFont;
+    state.secondaryFont = state.regularFont;
+    //state.boldFont = prefab::Font("res/fonts/Serati.ttf", 64.f);
+    //state.secondaryFont = prefab::Font("res/fonts/M6.ttf", 24.f);
 
     Entity plane = prefab::Plane();
     Entity cube = prefab::Cube();
     Entity rect = prefab::Rect();
     Entity grid = prefab::Grid();
     gltf::LoadPrims("res/models/Prims.glb");
-    //gltf::Load("res/models/FourthPiglet.glb");
     gltf::Load("res/models/Winter1880.glb");
 
 
 
-    Entity tooltip = hub::Create()
-        .Add<comp::BoundsWidget>().color(tun::black, 0.25f).minSize({512.f, 64.f}).pos({0.f, 256.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
-        .Add<comp::TextWidget>().font(state.regularFont).color(tun::white).text("Что это?").Next()
-        .Tag<tag::Tooltip>()
-        .GetEntity();
+    Entity tooltip = prefab::Tooltip();
 
-    Entity buttonPlay = hub::Create()
-        .Add<comp::BoundsWidget>().color(tun::black, 1.f).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).visible(true).onClick(&OnClickPlayButton).Next()
-        .Add<comp::TextWidget>().font(state.regularFont).color(tun::green).text("Играть").Next()
-        .Tag<tag::Menu>()
-        .GetEntity();
+    Entity buttonPlay = prefab::Button(LangStrings::play, &OnClickPlayButton, 0);
+    hub::AddTag<tag::Menu>(buttonPlay);
 
-    Entity buttonSettings = hub::Create()
-        .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, 0.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
-        .Add<comp::TextWidget>().font(state.regularFont).color(tun::white).text("Настройки").Next()
-        .GetEntity();
+    Entity sliderMouseSense = prefab::Slider(LangStrings::mouseSense, 0.5f, SliderType::mouse, 1);
+    Entity sliderSoundVolume = prefab::Slider(LangStrings::soundVolume, 1.f, SliderType::sound, 2);
+    Entity sliderMusicVolume = prefab::Slider(LangStrings::musicVolume, 0.75f, SliderType::music, 3);
 
-    Entity buttonButton = hub::Create()
-        .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, 128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
-        .Add<comp::TextWidget>().font(state.regularFont).color(tun::white).text("Нажми на меня").Next()
-        .GetEntity();
+    Entity buttonReplay = prefab::Button(LangStrings::replay, &RestartGame, 0);
 
     prefab::CameraFly({0.f, 10.f, 10.f}, tun::vecZero);
 
@@ -115,120 +104,8 @@ void game::Create() {
         .Tag<tag::MenuMusic>()
         .GetEntity();
 
-    Entity healthbarLabel = hub::Create()
-        .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, 128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::begin}).visible(true).Next()
-        .Add<comp::TextWidget>().font(state.regularFont).color(tun::white).text("Состояние умного дома").Next()
-        .Tag<tag::HealthbarLabel>()
-        .GetEntity();
-
-    hub::Create()
-        .Add<comp::BoundsWidget>().minSize({512.f, 32.f}).parentAnchors({tun::center, tun::begin}).pos({0.f, 64.f}).visible(true).Next()
-        .Add<comp::Healthbar>().health(5).Next();
-
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Прошло несколько лет с тех пор,").Next()
-            .Add<comp::Subtitle>().time(1.f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("как волк уничтожил дома трёх его братьев-поросят.").Next()
-            .Add<comp::Subtitle>().time(3.5f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Четвёртый поросёнок подкопил денег и построил себе Умный дом.").Next()
-            .Add<comp::Subtitle>().time(7.f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Но и для его врага прогресс не стоял на месте.").Next()
-            .Add<comp::Subtitle>().time(11.f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Теперь нашему герою угрожает Киберволк!").Next()
-            .Add<comp::Subtitle>().time(14.f).Next()
-            .GetEntity()
-    );
-
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().color(tun::black).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.regularFont).color(tun::red).text("Внимание! Умный дом обнаружил нападение на систему!").Next()
-            .Add<comp::Subtitle>().time(20.f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().color(tun::black).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.regularFont).color(tun::red).text("Киберволк атакует по всем электрическим приборам.").Next()
-            .Add<comp::Subtitle>().time(23.5f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().color(tun::black).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.regularFont).color(tun::red).text("Киберполиция прибудет через пять минут.").Next()
-            .Add<comp::Subtitle>().time(27.f).Next()
-            .GetEntity()
-    );
-
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().color(tun::black).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.regularFont).color(tun::red).text("Пока не приехала Киберполиция нужно отражать удары Киберволка!").Next()
-            .Add<comp::Subtitle>().time(30.5f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().color(tun::black).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.regularFont).color(tun::red).text("Для этого нужно следить, что именно атакует враг").Next()
-            .Add<comp::Subtitle>().time(34.f).Next()
-            .GetEntity()
-    );
-    State::Get().subtitles.push_back(
-        hub::Create()
-            .Add<comp::BoundsWidget>().color(tun::black).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
-            .Add<comp::TextWidget>().font(state.regularFont).color(tun::red).text("и быстро чинить устройство с помощью ключа соответствующего цвета.").Next()
-            .Add<comp::Subtitle>().time(38.f).Next()
-            .GetEntity()
-    );
-
-    Entity buttonReplay = hub::Create()
-        .Add<comp::BoundsWidget>().color(tun::black).visible(false).minSize({512.f, 64.f}).pos({0.f, 128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).onClick(&RestartGame).Next()
-        .Add<comp::TextWidget>().font(state.regularFont).color(tun::white).text("Заново").Next()
-        .GetEntity();
-    
-    Entity sliderMouseSense = hub::Create()
-        .Add<comp::BoundsWidget>().visible(true).color(tun::black, 0.75f).minSize({512.f, 64.f}).pos({0.f, 0.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
-        .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Чувствительность мыши").Next()
-        .Add<comp::SliderWidget>().percent(0.5f).type(SliderType::mouse).Next()
-        .GetEntity();
-
-    Entity sliderSoundVolume = hub::Create()
-        .Add<comp::BoundsWidget>().visible(true).color(tun::black, 0.75f).minSize({512.f, 64.f}).pos({0.f, 72.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
-        .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Громкость звуков").Next()
-        .Add<comp::SliderWidget>().percent(0.5f).type(SliderType::sound).Next()
-        .GetEntity();
-
-    Entity sliderMusicVolume = hub::Create()
-        .Add<comp::BoundsWidget>().visible(true).color(tun::black, 0.75f).minSize({512.f, 64.f}).pos({0.f, 72.f * 2}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::center}).Next()
-        .Add<comp::TextWidget>().font(state.secondaryFont).color(tun::white).text("Громкость музыки").Next()
-        .Add<comp::SliderWidget>().percent(0.5f).type(SliderType::music).Next()
-        .GetEntity();
-    
-
+    State::Get().subtitles.push_back(prefab::Subtitle(LangStrings::testSubtitle0, 1.f));
+    State::Get().subtitles.push_back(prefab::Subtitle(LangStrings::testSubtitle1, 4.f));
 
     work::SetMusicPlaying(false);
     State::Get().paused = true;
@@ -277,7 +154,6 @@ void game::Update() {
             work::DrawSliders();
         } else {
             work::DrawUI();
-            work::DrawHealthbar();
         }
     }
     gl::EndDrawUI();
@@ -388,10 +264,6 @@ static void RestartGame(Entity entity) {
     state.flyMode = false;
     state.musicPlaying = false;
     state.currentObject = entt::null;
-
-    hub::Reg().view<comp::Healthbar>().each([](comp::Healthbar& healthbar) {
-        healthbar.health = 5;
-    });
 
     hub::Reg().view<comp::Music>().each([](comp::Music& music) {
         sound::StopMusic(music.music);

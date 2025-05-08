@@ -1,13 +1,13 @@
 #include "Work.h"
 #include "tun/builder.h"
 #include "comp/Countdown.h"
-#include "comp/TextWidget.h"
+#include "comp/TextWidgetComp.h"
 #include "comp/BoundsWidget.h"
 #include "comp/Sound.h"
 #include "tun/sound.h"
 
 void work::UpdateCountdown() {
-    hub::Reg().view<comp::BoundsWidget, comp::TextWidget, comp::Countdown>().each([](comp::BoundsWidget& bounds, comp::TextWidget& text, comp::Countdown& countdown) {
+    hub::Reg().view<comp::BoundsWidget, TextWidgetComp, comp::Countdown>().each([](comp::BoundsWidget& bounds, TextWidgetComp& text, comp::Countdown& countdown) {
         if (!countdown.running) {
             bounds.visible = false;
             return;
