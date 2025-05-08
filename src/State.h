@@ -4,6 +4,7 @@
 #include "tun/math.h"
 #include "tun/list.h"
 #include "tun/input.h"
+#include "Lang.h"
 
 class State {
 public:
@@ -34,6 +35,8 @@ public:
     Entity regularFont {entt::null};
     Entity boldFont {entt::null};
     Entity secondaryFont {entt::null};
+
+    Lang currentLang {Lang::eng};
 
     static State& Get() {
         static State state;
