@@ -47,12 +47,12 @@ def shaders(dir, platform):
 
 def models(sourceDir, targetDir):
     res = []
-    r = glob.glob(os.path.join(sourceDir, "*.glb"), recursive=False)
+    r = glob.glob(os.path.join(sourceDir, "*.blend"), recursive=False)
     r = [os.path.normpath(f).replace(os.sep, "/") for f in r]
     for rr in r:
         modelName = rr.split("/")[-1]
-        target = "{}{}/{}".format(rootdir, targetDir, modelName)
-        source = "{}{}/{}".format(rootdir, sourceDir, modelName)
+        target = "{}{}/{}".format(rootdir, targetDir, modelName.replace(".blend", ".glb"))
+        source = "{}{}/{}".format(rootdir, sourceDir, modelName.replace(".blend", ".glb"))
         res += [{"target": target, "source": source}]
     return res
 
