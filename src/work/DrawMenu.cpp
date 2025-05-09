@@ -2,6 +2,7 @@
 #include "tun/math.h"
 #include "tun/builder.h"
 #include "comp/TextWidgetComp.h"
+#include "comp/Sound.h"
 #include "comp/ButtonWidget.h"
 #include "comp/BoundsWidget.h"
 #include "comp/Font.h"
@@ -132,6 +133,8 @@ void work::DrawMenu() {
                 bounds.timeSinceClick = 0.f;
                 bounds.timeToActualClick = 0.2f;
                 bounds.clickPending = true;
+                auto& soundClick = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundBoo>().back());
+                soundClick.Play();
             }
         }
 

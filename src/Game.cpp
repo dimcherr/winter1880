@@ -124,12 +124,22 @@ void game::Create() {
         .Tag<tag::SoundBoo>()
         .GetEntity();
 
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/buttonhover.ogg").Next()
+        .Tag<tag::SoundHover>()
+        .GetEntity();
+
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/buttonclick.ogg").Next()
+        .Tag<tag::SoundClick>()
+        .GetEntity();
+
 
     List<Entity> subtitles {};
     Entity introSubtitle = prefab::Subtitle(&LangStrings::testSubtitle0, 3.5f);
     hub::AddTag<tag::CueIntro>(introSubtitle);
     subtitles.push_back(introSubtitle);
-    subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle1, 3.5f));
+    subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle1, 5.5f));
     for (int i = 0; i < subtitles.size() - 1; ++i) {
         auto& sub = hub::Reg().get<SubtitleComp>(subtitles[i]);
         sub.next = subtitles[i + 1];
@@ -172,7 +182,8 @@ void game::Update() {
     }
     work::UpdateCamera();
 
-    gl::BeginRenderPass({0.85f, 0.5f, 0.5f});
+    //gl::BeginRenderPass({0.85f, 0.5f, 0.5f});
+    gl::BeginRenderPass({0.f, 0.0f, 0.0f});
     //work::DrawGrid();
     //work::DrawLights();
     //work::DrawColliders();

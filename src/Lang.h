@@ -20,6 +20,6 @@ namespace LangStrings {
     static LangString mouseSense {"Mouse sensitivity", "Чувствительность мыши"};
     static LangString soundVolume {"Sound Volume", "Громкость звуков"};
     static LangString musicVolume {"Music Volume", "Громкость музыки"};
-    static LangString testSubtitle0 {"Subtitle one", "Субтитр один"};
-    static LangString testSubtitle1 {"Subtitle two", "Субтитр два"};
+    static LangString testSubtitle0 {"I'm freezing", "Так холодно"};
+    static LangString testSubtitle1 {"I feel like I'm gonna die here", "Мне кажется, я умираю"};
 };
