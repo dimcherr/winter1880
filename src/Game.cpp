@@ -111,11 +111,11 @@ void game::Create() {
     Entity flashlight = prefab::Flashlight();
     
     Entity backgroundMusic = hub::Create()
-        .Add<comp::Music>().path("res/sounds/theme.ogg").volume(0.5f).Next()
+        .Add<comp::Music>().path("res/sounds/Winter1880.ogg").volume(0.2f).Next()
         .Tag<tag::GameMusic>()
         .GetEntity();
     Entity backgroundMusicMenu = hub::Create()
-        .Add<comp::Music>().path("res/sounds/FourthPigletOstMenu.ogg").volume(0.5f).Next()
+        .Add<comp::Music>().path("res/sounds/Winter1880.ogg").volume(0.2f).Next()
         .Tag<tag::MenuMusic>()
         .GetEntity();
 

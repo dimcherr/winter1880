@@ -81,6 +81,7 @@ public:
     DrawMaterial drawMaterial {};
     sg_bindings bindings {};
 
+
     static RenderState& Get() {
         static RenderState state;
         return state;
