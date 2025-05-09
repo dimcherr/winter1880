@@ -4,6 +4,8 @@ import sys
 try:
     mesh_names = {}
     for obj in bpy.context.scene.objects:
+        if not obj.data:
+            continue
         if obj.data.name not in mesh_names:
             mesh_names[obj.data.name] = 1
         else:
@@ -13,6 +15,8 @@ try:
         print("Mesh {} Count {}".format(mesh_name, mesh_names[mesh_name]))
 
     for obj in bpy.context.scene.objects:
+        if not obj.data:
+            continue
         mesh_count = mesh_names[obj.data.name]
         if mesh_count < 2:
             print("making copy of {}".format(obj.name))
