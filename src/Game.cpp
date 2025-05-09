@@ -81,6 +81,7 @@ void game::Create() {
 
     Entity buttonPlay = prefab::Button(&LangStrings::play, &OnClickPlayButton, 0);
     hub::AddTag<tag::Menu>(buttonPlay);
+    hub::AddTag<tag::ButtonPlay>(buttonPlay);
 
     Entity sliderMouseSense = prefab::Slider(&LangStrings::mouseSense, 0.5f, SliderType::mouse, 1);
     Entity sliderSoundVolume = prefab::Slider(&LangStrings::soundVolume, 1.f, SliderType::sound, 2);
@@ -102,7 +103,7 @@ void game::Create() {
         .Tag<tag::Current>()
         .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(150.f, 300.f).jumpStrength(0.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
-        .Add<comp::Sound>().foleys("res/sounds/steps/step", 3).Next()
+        .Add<comp::Sound>().foleys("res/sounds/stepconcrete", 3).period(0.5f, 0.53f).Next()
         .GetEntity();
     auto& characterTransform = hub::AddComp<TransformComp>(character);
     characterTransform.translation = {5.38f, 4.85f, -7.6f};
@@ -257,9 +258,9 @@ void game::OnKeyDown(Key key) {
     if (state.paused) return;
 
 
-    //if (key == Key::v) {
-        //work::SwitchCamera();
-    //}
+    if (key == Key::v) {
+        work::SwitchCamera();
+    }
 
     if (key == Key::q) {
         hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {

@@ -18,5 +18,6 @@ struct SoundBoo {};
 struct SoundHover {};
 struct SoundClick {};
 struct CueIntro {};
+struct ButtonPlay {};
 
 }

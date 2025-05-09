@@ -15,7 +15,13 @@ struct Camera {
     float pitch {0.f};
     float rotationSensitivity {0.05f};
     float movementSpeed {5.f};
-    Vec offset {0.f, 0.5f, 0.f};
+    Vec offset {0.f, 1.2f, 0.f};
+
+    float bobbingTime {0.f};
+    float bobbingDelta {0.f};
+    float bobbingSpeed {5.f};
+    float bobbingActive {false};
+    Vec bobbingOffset {0.f, -0.025f, 0.f};
 
     void Update(float width, float height) {
         if (type == tun::perspective) {

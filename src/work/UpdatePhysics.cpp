@@ -37,22 +37,38 @@ void work::UpdatePhysics() {
         } else {
             if (!State::Get().firstPerson) return;
 
+            if (camera.bobbingActive) {
+                camera.bobbingTime += hub::GetDeltaTime() * camera.bobbingSpeed * camera.bobbingDelta;
+                if (camera.bobbingTime > 1.f) {
+                    camera.bobbingTime = 1.f;
+                    camera.bobbingDelta = -1.f;
+                }
+                if (camera.bobbingTime < 0.f) {
+                    camera.bobbingTime = 0.f;
+                    camera.bobbingDelta = 0.f;
+                    camera.bobbingActive = false;
+                }
+            }
+
             if (State::Get().keys[(int)Key::shift]) {
-                sound.minPeriod = 0.45f * 0.7f;
-                sound.maxPeriod = 0.45f * 0.7f;
+                sound.minPeriod = 0.7 * 0.65f;
+                sound.maxPeriod = 0.7 * 0.65f;
                 character.speed = character.runSpeed;
             } else {
-                sound.minPeriod = 0.45f;
-                sound.maxPeriod = 0.45f;
+                sound.minPeriod = 0.7;
+                sound.maxPeriod = 0.7;
                 character.speed = character.walkSpeed;
             }
 
-            if (character.character->GetLinearVelocity().LengthSq() > 10.f && character.character->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround) {
+            if (character.character->GetLinearVelocity().LengthSq() > 5.f && character.character->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround) {
                 if (sound.elapsedTime > sound.period) {
                     static int stepSide = 0;
                     float pan = stepSide * 0.3f - 0.15f + 0.5f;
                     stepSide = (stepSide + 1) % 2;
                     sound.Play(pan);
+                    camera.bobbingActive = true;
+                    camera.bobbingDelta = 1.f;
+                    camera.bobbingTime = 0.f;
                 }
             }
 
@@ -99,7 +115,7 @@ void work::UpdatePhysics() {
                 state.tempAllocator
             );
 
-            transform.translation = Convert(character.character->GetPosition());
+            transform.translation = Convert(character.character->GetPosition()) + tun::Lerp(tun::vecZero, camera.bobbingOffset, camera.bobbingTime * camera.bobbingTime);
             transform.Update();
 
             // update pickable position

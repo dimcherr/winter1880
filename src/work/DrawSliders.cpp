@@ -148,7 +148,8 @@ void work::DrawSliders() {
         gl::Draw();
 
 
-        float deformAmp = tun::Lerp(0.0001f, 0.00005f, tun::Clamp(bounds.timeSinceClick * 5.f, 0.f, 1.f));
+        //float deformAmp = tun::Lerp(0.0001f, 0.00005f, tun::Clamp(bounds.timeSinceClick * 5.f, 0.f, 1.f));
+        float deformAmp = 0.f;
         float scaleAmp = tun::Lerp(0.5f, 0.1f, tun::Clamp(bounds.timeSinceClick * 5.f, 0.f, 1.f));
         float deformTime = tun::Lerp(1.f, (float)hub::GetTime(), tun::Clamp(bounds.timeSinceClick * 5.f, 0.f, 1.f));
         ImGui::SetCursorScreenPos(ToImVec2(bounds.pos + parentAnchorOffset + anchorOffset + textAnchorOffset));

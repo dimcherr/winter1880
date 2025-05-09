@@ -7,7 +7,7 @@
 Entity prefab::Subtitle(LangString* text, float duration) {
     auto& state = State::Get();
     Entity entity = hub::Create()
-        .Add<comp::BoundsWidget>().minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
+        .Add<comp::BoundsWidget>().color(tun::black, 0.5f).minSize({512.f, 64.f}).pos({0.f, -128.f}).anchors({tun::center, tun::center}).parentAnchors({tun::center, tun::end}).visible(false).Next()
         .GetEntity();
 
     auto& subtitle = hub::AddComp<SubtitleComp>(entity);

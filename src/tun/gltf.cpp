@@ -303,9 +303,12 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
     } else if (node.light) {
         Color colors[] {
             Color(1.f, 1.f, 1.f),
-            Color(0.5f, 0.5f, 1.f),
-            Color(1.f, 0.5f, 0.5f),
-            Color(1.f, 0.5f, 1.f),
+            Color(1.f, 1.f, 1.f),
+            Color(1.f, 1.f, 1.f),
+            Color(1.f, 1.f, 1.f),
+            //Color(0.5f, 0.5f, 1.f),
+            //Color(1.f, 0.5f, 0.5f),
+            //Color(1.f, 0.5f, 1.f),
         };
         static int lightIndex = 0;
         ++lightIndex;
@@ -323,7 +326,7 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
 
         auto& pointLight = hub::AddComp<PointLightComp>(modelEntity);
         pointLight.color = colors[lightIndex % 4];
-        pointLight.intensity = node.light->intensity * 0.001f;
+        pointLight.intensity = node.light->intensity * 0.00001f;
         pointLight.range = 5.f;
     }
     
