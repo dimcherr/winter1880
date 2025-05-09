@@ -3,7 +3,7 @@
 #include "comp/Mesh.h"
 #include "comp/TransformComp.h"
 #include "comp/MaterialGrid.h"
-#include "comp/Subtitle.h"
+#include "comp/SubtitleComp.h"
 #include "comp/Model.h"
 #include "comp/SliderWidget.h"
 #include "comp/MaterialColor.h"
@@ -58,7 +58,7 @@ void game::Create() {
 
 
     auto& state = State::Get();
-    state.regularFont = prefab::Font("res/fonts/Serati.ttf", 32.f);
+    state.regularFont = prefab::Font("res/fonts/Vollkorn.ttf", 48.f);
     state.boldFont = state.regularFont;
     state.secondaryFont = state.regularFont;
 
@@ -100,7 +100,7 @@ void game::Create() {
         .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).Next()
         .Tag<tag::FirstPerson>()
         .Tag<tag::Current>()
-        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(300.f, 600.f).jumpStrength(300.f).Next()
+        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(150.f, 300.f).jumpStrength(0.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
         .Add<comp::Sound>().foleys("res/sounds/steps/step", 3).Next()
         .GetEntity();
@@ -119,8 +119,22 @@ void game::Create() {
         .Tag<tag::MenuMusic>()
         .GetEntity();
 
-    State::Get().subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle0, 1.f));
-    State::Get().subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle1, 4.f));
+    Entity booSound = hub::Create()
+        .Add<comp::Sound>().foleys("res/sounds/boo", 3).Next()
+        .Tag<tag::SoundBoo>()
+        .GetEntity();
+
+
+    List<Entity> subtitles {};
+    Entity introSubtitle = prefab::Subtitle(&LangStrings::testSubtitle0, 3.5f);
+    hub::AddTag<tag::CueIntro>(introSubtitle);
+    subtitles.push_back(introSubtitle);
+    subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle1, 3.5f));
+    for (int i = 0; i < subtitles.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitles[i]);
+        sub.next = subtitles[i + 1];
+    }
+
 
     work::SetMusicPlaying(false);
     State::Get().paused = true;
@@ -130,13 +144,13 @@ void game::Create() {
 void game::Update() {
     auto& state = State::Get();
     work::UpdateSounds();
-    work::UpdateSubtitles();
 
     if (!state.paused) {
         work::UpdateDoors();
         work::UpdatePhysics();
         work::UpdateCountdown();
         work::UpdateFlashlight();
+        work::UpdateSubtitles();
     }
 
     work::UpdateTransforms();
@@ -235,6 +249,17 @@ void game::OnKeyDown(Key key) {
     //if (key == Key::v) {
         //work::SwitchCamera();
     //}
+
+    if (key == Key::q) {
+        hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+            subtitle.running = false;
+            subtitle.time = 0.f;
+        });
+        auto& introSub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueIntro, SubtitleComp>().back());
+        introSub.running = true;
+        introSub.time = 0.f;
+    }
+
     if (key == Key::f) {
         hub::Reg().view<FlashlightComp>().each([](FlashlightComp& flashlight) {
             flashlight.SetTurnedOn(flashlight.enabled < 0.5f);

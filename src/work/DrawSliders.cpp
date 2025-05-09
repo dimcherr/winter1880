@@ -167,13 +167,13 @@ void work::DrawSliders() {
         }
 
         if (slider.type == SliderType::mouse) {
-            text.text = tun::formatToString("{}: {}%", LangStrings::mouseSense.Get(), (int)(slider.percent * 100.f));
+            text.text = tun::formatToString("{} - {}", LangStrings::mouseSense.Get(), (int)(slider.percent * 100.f));
             State::Get().sensitivityFactor = tun::Lerp(0.5f, 4.f, slider.percent);
         } else if (slider.type == SliderType::music) {
-            text.text = tun::formatToString("{}: {}%", LangStrings::musicVolume.Get(), (int)(slider.percent * 100.f));
+            text.text = tun::formatToString("{} - {}", LangStrings::musicVolume.Get(), (int)(slider.percent * 100.f));
             State::Get().masterMusicVolume = slider.percent;
         } else if (slider.type == SliderType::sound) {
-            text.text = tun::formatToString("{}: {}%", LangStrings::soundVolume.Get(), (int)(slider.percent * 100.f));
+            text.text = tun::formatToString("{} - {}", LangStrings::soundVolume.Get(), (int)(slider.percent * 100.f));
             State::Get().masterSoundVolume = slider.percent;
         }
 

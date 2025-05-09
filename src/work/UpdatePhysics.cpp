@@ -70,7 +70,7 @@ void work::UpdatePhysics() {
             if (hub::IsKeyPressed(Key::d)) {
                 character.movementVector += Vec(1.f, 0.f, 0.f);
             }
-            character.jumping = hub::IsKeyPressed(Key::space);
+            //character.jumping = hub::IsKeyPressed(Key::space);
             if (glm::length(character.movementVector) > 0.001f) {
                 Quat rot = Quat({0.f, camera.yaw, 0.f});
                 character.movementVector = rot * glm::normalize(character.movementVector);

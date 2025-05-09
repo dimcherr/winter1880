@@ -323,7 +323,7 @@ static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unorder
 
         auto& pointLight = hub::AddComp<PointLightComp>(modelEntity);
         pointLight.color = colors[lightIndex % 4];
-        pointLight.intensity = node.light->intensity * 0.0001f;
+        pointLight.intensity = node.light->intensity * 0.001f;
         pointLight.range = 5.f;
     }
     

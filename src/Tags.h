@@ -14,5 +14,7 @@ struct Pickable {};
 struct Menu {};
 struct MenuMusic {};
 struct GameMusic {};
+struct SoundBoo {};
+struct CueIntro {};
 
 }

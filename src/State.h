@@ -30,7 +30,6 @@ public:
     bool flyMode {false};
     bool musicPlaying {false};
     Entity currentObject {entt::null};
-    List<Entity> subtitles {};
 
 
     Entity regularFont {entt::null};

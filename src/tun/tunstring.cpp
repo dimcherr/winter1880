@@ -19,3 +19,7 @@ StringView TrimRight(StringView sv) {
 StringView Trim(StringView sv) {
     return TrimRight(TrimLeft(sv));
 }
+
+StringView Substring(StringView sv, float percent) {
+    return sv.substr(0, static_cast<int>(sv.size() * percent));
+}

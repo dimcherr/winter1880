@@ -141,7 +141,7 @@ vec3 ComputePBR() {
 
         float attenuation = pointLightPos[i].a / (dist * dist * 0.27);                   // Compute attenuation
         attenuation = pow(attenuation, maxL);
-        attenuation = clamp(attenuation, 0.0, 1.0);
+        attenuation = clamp(attenuation, 0.0, 1.0) * 10.0;
         //float attenuation = sampledLAlpha;
         //if (dist > 7.f) {
             //attenuation = 0.f;
