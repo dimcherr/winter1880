@@ -9,3 +9,4 @@ shaders/*.h
 glb.json
 *.blend1
 *.wav
+*.asd

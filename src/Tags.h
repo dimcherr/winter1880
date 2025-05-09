@@ -17,6 +17,10 @@ struct GameMusic {};
 struct SoundBoo {};
 struct SoundHover {};
 struct SoundClick {};
+struct SoundDoorOpen {};
+struct SoundDoorClose {};
+struct SoundFlashlightOn {};
+struct SoundFlashlightOff {};
 struct CueIntro {};
 struct ButtonPlay {};
 

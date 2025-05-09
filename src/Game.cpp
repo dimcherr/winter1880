@@ -135,6 +135,31 @@ void game::Create() {
         .Tag<tag::SoundClick>()
         .GetEntity();
 
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/doorCloseLoud.ogg").Next()
+        .Tag<tag::SoundDoorClose>()
+        .GetEntity();
+
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/doorOpen.ogg").Next()
+        .Tag<tag::SoundDoorOpen>()
+        .GetEntity();
+
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/doorOpen.ogg").Next()
+        .Tag<tag::SoundDoorOpen>()
+        .GetEntity();
+
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/flashlightOn.ogg").Next()
+        .Tag<tag::SoundFlashlightOn>()
+        .GetEntity();
+
+    hub::Create()
+        .Add<comp::Sound>().path("res/sounds/flashlightOff.ogg").Next()
+        .Tag<tag::SoundFlashlightOff>()
+        .GetEntity();
+
 
     List<Entity> subtitles {};
     Entity introSubtitle = prefab::Subtitle(&LangStrings::testSubtitle0, 3.5f);
@@ -274,7 +299,15 @@ void game::OnKeyDown(Key key) {
 
     if (key == Key::f) {
         hub::Reg().view<FlashlightComp>().each([](FlashlightComp& flashlight) {
-            flashlight.SetTurnedOn(flashlight.enabled < 0.5f);
+            bool turnOn = flashlight.enabled < 0.5f;
+            flashlight.SetTurnedOn(turnOn);
+            auto& soundFlashlightOn = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundFlashlightOn>().back());
+            auto& soundFlashlightOff = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundFlashlightOff>().back());
+            if (turnOn) {
+                soundFlashlightOn.Play();
+            } else {
+                soundFlashlightOff.Play();
+            }
         });
     }
 
@@ -283,6 +316,8 @@ void game::OnKeyDown(Key key) {
         if (door) {
             if (door->doorState < 0.5f) {
                 door->stateDelta = 1.f;
+                auto& doorOpenSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundDoorOpen>().back());
+                doorOpenSound.Play();
             } else {
                 door->stateDelta = -1.f;
             }

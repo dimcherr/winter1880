@@ -8,7 +8,8 @@ struct Door {
     float openAngle {90.f};
     float doorState {0.f}; // 0 close 1 open
     float stateDelta {0.f}; // 1 opening -1 closing
-    float openingSpeed {2.5f};
+    float openingSpeed {0.3f};
+    float closingSpeed {3.5f};
 };
 
 }
