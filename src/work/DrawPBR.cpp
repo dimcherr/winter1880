@@ -42,6 +42,7 @@ void work::DrawPBR() {
         state.pbrMaterial.fsParams.ambientFactor = 0.001f;
         state.pbrMaterial.fsParams.metallicFactor = 1.f;
         state.pbrMaterial.fsParams.roughnessFactor = 1.f;
+        state.pbrMaterial.fsParams.emissiveFactor = 1.f;
 
         state.pbrMaterial.fsParams.offset = {0.f, 0.f};
         state.pbrMaterial.fsParams.tiling = {1.f, 1.f};
@@ -64,6 +65,11 @@ void work::DrawPBR() {
         state.bindings.images[IMG_normalMap] = hub::Reg().get<TextureAsset>(material.normalTexture).image;
         state.bindings.images[IMG_ormMap] = hub::Reg().get<TextureAsset>(material.ormTexture).image;
         state.bindings.images[IMG_cloudTex] = hub::Reg().get<TextureAsset>(State::Get().cloudTexture).image;
+        if (hub::Reg().valid(material.emissiveTexture)) {
+            state.bindings.images[IMG_emissiveMap] = hub::Reg().get<TextureAsset>(material.emissiveTexture).image;
+        } else {
+            state.bindings.images[IMG_emissiveMap] = hub::Reg().get<TextureAsset>(State::Get().blackTexture).image;
+        }
 
         auto& meshAsset = hub::Get<MeshAsset>(mesh.asset);
         gl::UseMesh(meshAsset.vertexBuffer, meshAsset.indexBuffer, meshAsset.elementCount);

@@ -50,7 +50,7 @@ layout(binding=1) uniform pbr_fs_params {
     vec2 offset;
     float metallicFactor;
     float roughnessFactor;
-    vec3 emissiveColor;
+    float emissiveFactor;
     float ambientFactor;
     float time;
 
@@ -64,6 +64,7 @@ layout(binding=0) uniform texture2D albedoMap;
 layout(binding=1) uniform texture2D normalMap;
 layout(binding=2) uniform texture2D ormMap;
 layout(binding=3) uniform texture2D cloudTex;
+layout(binding=4) uniform texture2D emissiveMap;
 
 in vec3 fragPos;
 in vec2 fragTexCoord;
@@ -102,6 +103,8 @@ vec3 ComputePBR() {
     float roughness = clamp(orm.g * roughnessFactor, 0.04, 1.0);
     float metallic = clamp(orm.b * metallicFactor, 0.04, 1.0);
 
+    vec3 emissive = texture(sampler2D(emissiveMap, smp), uv).rgb;
+
     vec3 N = texture(sampler2D(normalMap, smp), uv).rgb;
     N = N * 2.0 - 1.0;
     N = normalize(TBN * N);
@@ -139,9 +142,9 @@ vec3 ComputePBR() {
         //dist = clamp(dist, 0.f, maxL);
         //attenuation = mix(100.f, 0.f, dist / maxL);
 
-        float attenuation = pointLightPos[i].a / (dist * dist * 0.27);                   // Compute attenuation
+        float attenuation = pointLightPos[i].a / (dist * dist * 0.15);                   // Compute attenuation
         attenuation = pow(attenuation, maxL);
-        attenuation = clamp(attenuation, 0.0, 1.0) * 10.0;
+        attenuation = clamp(attenuation, 0.0, 1.0) * 5.0;
         //float attenuation = sampledLAlpha;
         //if (dist > 7.f) {
             //attenuation = 0.f;
@@ -172,7 +175,7 @@ vec3 ComputePBR() {
     
     vec3 ambientFinal = (ambientColor + albedo) * ambientFactor * 0.5;
     
-    return ambientFinal + lightAccum * ao + emissiveColor * (1.f - orm.g);
+    return ambientFinal + lightAccum * ao + emissive * emissiveFactor;
     //return ambientFinal + lightAccum * ao;
     //return lightAccum * ao;
 }

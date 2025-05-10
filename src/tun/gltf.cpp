@@ -30,6 +30,7 @@ List<ModelDesc> modelDescs {
     {"Static", prefab::StaticBody},
     {"Door", prefab::Door},
     {"Collision", prefab::Collision},
+    {"SlidingManhole", prefab::SlidingManhole},
 };
 
 static void Process(cgltf_data* data);
@@ -161,6 +162,10 @@ static void Process(cgltf_data* data) {
                 .normalScale(material.normal_texture.scale)
                 .Next()
             .GetEntity();
+        if (material.emissive_texture.texture) {
+            hub::Modify(materialEntity)
+                .Modify<comp::MaterialPBR>().emissiveTexture(textureAssets[material.emissive_texture.texture]).emissiveFactor(1.f).Next();
+        }
         materials[&material] = materialEntity;
     }
 

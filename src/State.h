@@ -36,6 +36,7 @@ public:
     Entity boldFont {entt::null};
     Entity secondaryFont {entt::null};
     Entity cloudTexture {entt::null};
+    Entity blackTexture {entt::null};
 
     Lang currentLang {Lang::eng};
 

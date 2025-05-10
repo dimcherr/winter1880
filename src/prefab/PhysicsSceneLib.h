@@ -9,5 +9,6 @@ void StaticBody(Entity entity, Entity modelAsset);
 void PickableBody(Entity entity, Entity modelAsset);
 void Door(Entity entity, Entity modelAsset);
 void Collision(Entity entity, Entity modelAsset);
+void SlidingManhole(Entity entity, Entity modelAsset);
 
 }

@@ -13,6 +13,7 @@ struct MaterialPBR {
     Entity baseColorTexture {};
     Entity normalTexture {};
     Entity ormTexture {};
+    Entity emissiveTexture {entt::null};
     float metallicFactor {0.5f};
     float roughnessFactor {0.5f};
     float normalScale {1.f};
@@ -45,6 +46,11 @@ struct CompBuilder<comp::MaterialPBR> : public BaseCompBuilder<comp::MaterialPBR
 
     CompBuilder& ormTexture(Entity ormTexture) {
         comp->ormTexture = ormTexture;
+        return *this;
+    }
+
+    CompBuilder& emissiveTexture(Entity emissiveTexture) {
+        comp->emissiveTexture = emissiveTexture;
         return *this;
     }
 
