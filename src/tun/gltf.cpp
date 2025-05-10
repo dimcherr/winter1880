@@ -37,6 +37,10 @@ List<ModelDesc> modelDescs {
     {"GearCCW", [](Entity entity, Entity modelAsset) { prefab::Gear(entity, modelAsset, -1.f); }},
     {"GearCorrect", [](Entity entity, Entity modelAsset) { prefab::GearPickable(entity, modelAsset); }},
     {"GearSlot", [](Entity entity, Entity modelAsset) { prefab::GearSlot(entity, modelAsset, 1.f); }},
+    {"LeverStick", [](Entity entity, Entity modelAsset) {}},
+    {"LeverBase", [](Entity entity, Entity modelAsset) {}},
+    {"InstructionEng", [](Entity entity, Entity modelAsset) { prefab::Instruction(entity, modelAsset, Lang::eng); }},
+    {"InstructionRus", [](Entity entity, Entity modelAsset) { prefab::Instruction(entity, modelAsset, Lang::rus); }},
 };
 
 static void Process(cgltf_data* data);

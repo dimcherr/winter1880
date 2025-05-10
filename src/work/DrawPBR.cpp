@@ -11,6 +11,7 @@
 #include "comp/Model.h"
 #include "comp/ModelAsset.h"
 #include "comp/PointLightComp.h"
+#include "Tags.h"
 #include "pbr.glsl.h"
 
 void work::DrawPBR() {

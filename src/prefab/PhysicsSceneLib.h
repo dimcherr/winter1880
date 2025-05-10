@@ -14,5 +14,6 @@ void Gear(Entity entity, Entity modelAsset, float rotationDelta);
 void GearSlot(Entity entity, Entity modelAsset, float rotationDelta);
 void GearPickable(Entity entity, Entity modelAsset);
 void MainGate(Entity entity, Entity modelAsset, float rotation);
+void Instruction(Entity entity, Entity modelAsset, Lang lang);
 
 }

@@ -27,5 +27,7 @@ struct MusicWind {};
 struct CueIntro {};
 struct ButtonPlay {};
 struct MainGate {};
+struct InstructionEng {};
+struct InstructionRus {};
 
 }

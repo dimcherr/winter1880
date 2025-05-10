@@ -34,6 +34,12 @@ void work::UpdatePhysics() {
             settings.mMaxStrength = character.maxStrength;
             settings.mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -shape.halfHeight);
             character.character = new JPH::CharacterVirtual(&settings, Convert(transform.translation), Convert(transform.rotation), &phys::State::Get().physicsSystem);
+
+
+
+            // TODO TEST
+            State::Get().introStage = 3;
+            character.character->SetPosition({0.f, 0.f, -15.f});
         } else {
             if (!State::Get().firstPerson) return;
 
@@ -50,10 +56,10 @@ void work::UpdatePhysics() {
                 }
             }
 
-            auto& sound = hub::Reg().get<comp::Sound>(transform.translation.z < -12.f ? hub::Reg().view<tag::SoundStepSnow>().back() : hub::Reg().view<tag::SoundStepConcrete>().back());
+            auto& sound = hub::Reg().get<comp::Sound>(transform.translation.z < -13.f ? hub::Reg().view<tag::SoundStepSnow>().back() : hub::Reg().view<tag::SoundStepConcrete>().back());
             if (State::Get().keys[(int)Key::shift]) {
-                sound.minPeriod = 0.7 * 0.65f;
-                sound.maxPeriod = 0.7 * 0.65f;
+                sound.minPeriod = 0.7 * 0.85f;
+                sound.maxPeriod = 0.7 * 0.85f;
                 character.speed = character.runSpeed;
             } else {
                 sound.minPeriod = 0.7;

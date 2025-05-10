@@ -96,6 +96,7 @@ void game::Create() {
     Entity sliderSoundVolume = prefab::Slider(&LangStrings::soundVolume, 1.f, SliderType::sound, 2);
     Entity sliderMusicVolume = prefab::Slider(&LangStrings::musicVolume, 0.75f, SliderType::music, 3);
 
+
     Entity buttonChangeLanguage = prefab::Button(&LangStrings::currentLang, [](Entity entity) { work::UpdateLanguage(); }, 4);
     hub::AddTag<tag::Menu>(buttonChangeLanguage);
 
@@ -104,6 +105,13 @@ void game::Create() {
 
     prefab::CameraFly({0.f, 10.f, 10.f}, tun::vecZero);
 
+
+    hub::Reg().view<tag::InstructionEng, comp::Model>().each([](comp::Model& model) {
+        model.visible = State::Get().currentLang == Lang::eng;
+    });
+    hub::Reg().view<tag::InstructionRus, comp::Model>().each([](comp::Model& model) {
+        model.visible = State::Get().currentLang == Lang::rus;
+    });
 
 
     Entity character = hub::Create()
@@ -144,7 +152,7 @@ void game::Create() {
         .GetEntity();
 
     Entity concreteStepSound = hub::Create()
-        .Add<comp::Sound>().foleys("res/sounds/stepconcrete", 3).period(0.5f, 0.53f).volume(0.5f).Next()
+        .Add<comp::Sound>().foleys("res/sounds/stepconcrete", 3).period(0.5f, 0.53f).volume(0.2f).Next()
         .Tag<tag::SoundStepConcrete>()
         .GetEntity();
 
@@ -201,6 +209,8 @@ void game::Create() {
     State::Get().paused = true;
     onWebLoad();
     work::SetMusicMenuPlayed(true);
+
+    //if (State::Get().introStage == 5 && characterTransform.translation.z > -10.f) {
 }
 
 void game::Update() {
