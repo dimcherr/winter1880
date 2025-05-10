@@ -38,8 +38,8 @@ void work::UpdatePhysics() {
 
 
             // TODO TEST
-            State::Get().introStage = 3;
-            character.character->SetPosition({0.f, 0.f, -15.f});
+            //State::Get().introStage = 3;
+            //character.character->SetPosition({0.f, 0.f, -15.f});
         } else {
             if (!State::Get().firstPerson) return;
 

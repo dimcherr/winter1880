@@ -120,8 +120,8 @@ void game::Create() {
         .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).zplanes(0.1f, 1000.f).Next()
         .Tag<tag::FirstPerson>()
         .Tag<tag::Current>()
-        //.Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(3.f, 6.f).jumpStrength(0.f).Next()
-        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(100.f, 6.f).jumpStrength(0.f).Next()
+        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(3.f, 6.f).jumpStrength(0.f).Next()
+        //.Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(100.f, 6.f).jumpStrength(0.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
         .GetEntity();
     auto& characterTransform = hub::AddComp<TransformComp>(character);
