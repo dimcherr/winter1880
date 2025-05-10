@@ -4,6 +4,10 @@
 #include "comp/TransformComp.h"
 #include "comp/MaterialGrid.h"
 #include "comp/SubtitleComp.h"
+#include "comp/GearPickableComp.h"
+#include "comp/GearSlotComp.h"
+#include "comp/GearComp.h"
+#include "comp/BodyComp.h"
 #include "comp/Model.h"
 #include "comp/SliderWidget.h"
 #include "comp/MaterialColor.h"
@@ -191,6 +195,7 @@ void game::Update() {
         work::UpdateCountdown();
         work::UpdateFlashlight();
         work::UpdateSubtitles();
+        work::UpdateGears();
     }
 
     work::UpdateTransforms();
@@ -331,6 +336,27 @@ void game::OnKeyDown(Key key) {
             auto* character = hub::Reg().try_get<comp::Character>(hub::Reg().view<comp::Character, tag::Current>().back());
             if (character) {
                 character->pickable = state.currentObject;
+            }
+        }
+
+        if (hub::Reg().any_of<GearSlotComp>(state.currentObject) && !hub::Reg().get<GearSlotComp>(state.currentObject).filled) {
+            auto* character = hub::Reg().try_get<comp::Character>(hub::Reg().view<comp::Character, tag::Current>().back());
+            if (character) {
+                if (hub::Reg().any_of<GearPickableComp>(character->pickable)) {
+                    // transfer gear to slot
+                    hub::Reg().remove<comp::BoxShape>(character->pickable);
+                    hub::Reg().remove<BodyComp>(character->pickable);
+                    hub::Reg().remove<tag::Pickable>(character->pickable);
+                    auto& gear = hub::AddComp<GearComp>(character->pickable);
+                    auto& gearTransform = hub::Reg().get<TransformComp>(character->pickable);
+                    auto& gearSlotTransform = hub::Reg().get<TransformComp>(state.currentObject);
+                    hub::Reg().get<GearSlotComp>(state.currentObject).filled = true;
+                    gearTransform.translation = gearSlotTransform.translation;
+                    gearTransform.rotation = gearSlotTransform.rotation;
+                    gearTransform.Update();
+                    gear.rotationSpeed = 1.f;
+                    character->pickable = entt::null;
+                }
             }
         }
     }

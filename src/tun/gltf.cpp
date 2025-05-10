@@ -31,6 +31,10 @@ List<ModelDesc> modelDescs {
     {"Door", prefab::Door},
     {"Collision", prefab::Collision},
     {"SlidingManhole", prefab::SlidingManhole},
+    {"GearCW", [](Entity entity, Entity modelAsset) { prefab::Gear(entity, modelAsset, 1.f); }},
+    {"GearCCW", [](Entity entity, Entity modelAsset) { prefab::Gear(entity, modelAsset, -1.f); }},
+    {"GearCorrect", [](Entity entity, Entity modelAsset) { prefab::GearPickable(entity, modelAsset); }},
+    {"GearSlot", [](Entity entity, Entity modelAsset) { prefab::GearSlot(entity, modelAsset, 1.f); }},
 };
 
 static void Process(cgltf_data* data);

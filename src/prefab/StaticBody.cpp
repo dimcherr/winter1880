@@ -9,7 +9,7 @@ void prefab::StaticBody(Entity entity, Entity modelAsset) {
     comp::BoxShape& boxShape = hub::AddComp<comp::BoxShape>(entity);
     boxShape = assetBoxShape;
 
-    BodyComp body = hub::AddComp<BodyComp>(entity);
+    BodyComp& body = hub::AddComp<BodyComp>(entity);
     body.motionType = JPH::EMotionType::Static;
     body.layer = phys::Layers::nonMoving;
 }

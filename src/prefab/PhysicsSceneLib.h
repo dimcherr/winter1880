@@ -10,5 +10,8 @@ void PickableBody(Entity entity, Entity modelAsset);
 void Door(Entity entity, Entity modelAsset);
 void Collision(Entity entity, Entity modelAsset);
 void SlidingManhole(Entity entity, Entity modelAsset);
+void Gear(Entity entity, Entity modelAsset, float rotationDelta);
+void GearSlot(Entity entity, Entity modelAsset, float rotationDelta);
+void GearPickable(Entity entity, Entity modelAsset);
 
 }

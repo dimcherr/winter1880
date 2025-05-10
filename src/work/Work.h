@@ -27,5 +27,6 @@ void DrawSliders();
 void UpdateSubtitles();
 void UpdateLanguage();
 void UpdateFlashlight();
+void UpdateGears();
 
 }
