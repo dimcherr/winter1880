@@ -29,5 +29,7 @@ struct ButtonPlay {};
 struct MainGate {};
 struct InstructionEng {};
 struct InstructionRus {};
+struct LeverMainLeft {};
+struct LeverMainRight {};
 
 }

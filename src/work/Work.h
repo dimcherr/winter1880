@@ -29,6 +29,7 @@ void UpdateGears();
 void DrawText3D();
 void DrawBlackScreen();
 void UpdateTimeline();
+void UpdateLevers();
 
 void SetMusicMenuPlayed(bool played);
 void SetMusicWindPlayed(bool played);

@@ -6,6 +6,8 @@
 #include "comp/SubtitleComp.h"
 #include "comp/GearPickableComp.h"
 #include "comp/GearSlotComp.h"
+#include "comp/LeverBaseComp.h"
+#include "comp/LeverComp.h"
 #include "comp/GearComp.h"
 #include "comp/BodyComp.h"
 #include "comp/Model.h"
@@ -118,7 +120,8 @@ void game::Create() {
         .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).zplanes(0.1f, 1000.f).Next()
         .Tag<tag::FirstPerson>()
         .Tag<tag::Current>()
-        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(3.f, 6.f).jumpStrength(0.f).Next()
+        //.Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(3.f, 6.f).jumpStrength(0.f).Next()
+        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(100.f, 6.f).jumpStrength(0.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
         .GetEntity();
     auto& characterTransform = hub::AddComp<TransformComp>(character);
@@ -220,6 +223,7 @@ void game::Update() {
     if (!state.paused) {
         work::UpdateTimeline();
         work::UpdateDoors();
+        work::UpdateLevers();
         work::UpdatePhysics();
         work::UpdateFlashlight();
         work::UpdateSubtitles();
@@ -362,6 +366,20 @@ void game::OnKeyDown(Key key) {
                 doorOpenSound.Play();
             } else {
                 door->stateDelta = -1.f;
+            }
+        }
+
+        if (hub::Reg().any_of<LeverBaseComp>(state.currentObject)) {
+            tun::log("ACTIVATE LEVER!");
+            if (hub::Reg().any_of<tag::LeverMainLeft>(state.currentObject)) {
+                hub::Reg().view<LeverComp, tag::LeverMainLeft>().each([] (LeverComp& lever) {
+                    lever.delta = 1.f;
+                });
+            }
+            else if (hub::Reg().any_of<tag::LeverMainRight>(state.currentObject)) {
+                hub::Reg().view<LeverComp, tag::LeverMainRight>().each([] (LeverComp& lever) {
+                    lever.delta = 1.f;
+                });
             }
         }
 

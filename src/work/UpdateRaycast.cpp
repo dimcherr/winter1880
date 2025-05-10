@@ -14,6 +14,8 @@
 #include "comp/TextWidgetComp.h"
 #include "comp/Door.h"
 #include "comp/Character.h"
+#include "comp/LeverBaseComp.h"
+#include "comp/LeverComp.h"
 #include "Tags.h"
 
 void work::UpdateRaycast() {
@@ -71,6 +73,30 @@ void work::UpdateRaycast() {
             State::Get().currentObject = entity;
         });
 
+        hub::Reg().view<BodyComp, BoxShape, Model, TransformComp, LeverBaseComp>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const TransformComp& modelTransform, LeverBaseComp& leverBase) {
+            if (!State::Get().firstPerson || body.id != bodyID) return;
+
+            Entity leverEntity {entt::null};
+            if (hub::Reg().any_of<tag::LeverMainLeft>(entity)) {
+                leverEntity = hub::Reg().view<tag::LeverMainLeft, LeverComp>().back();
+            }
+            else if (hub::Reg().any_of<tag::LeverMainRight>(entity)) {
+                leverEntity = hub::Reg().view<tag::LeverMainRight, LeverComp>().back();
+            }
+
+            auto& lever = hub::Reg().get<LeverComp>(leverEntity);
+
+            auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
+            if (lever.state == 0.f) {
+                text.text = "[E] Потянуть";
+                text.color = tun::white;
+                bounds.visible = true;
+                bounds.parentAnchors.vertical = tun::center;
+                bounds.pos = {0.f, 128.f};
+                State::Get().currentObject = entity;
+            }
+        });
+
         hub::Reg().view<BodyComp, BoxShape, Model, TransformComp, tag::Pickable>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const TransformComp& modelTransform) {
             if (!State::Get().firstPerson || body.id != bodyID) return;
 
@@ -116,5 +142,7 @@ void work::UpdateRaycast() {
                 State::Get().currentObject = entity;
             }
         });
-    } 
+    } else {
+        State::Get().currentObject = entt::null;
+    }
 }
