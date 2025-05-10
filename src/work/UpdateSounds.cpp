@@ -7,7 +7,19 @@
 
 void work::UpdateSounds() {
     hub::Reg().view<comp::Music>().each([](comp::Music& music) {
-        SetMusicVolume(music.music, glm::clamp(music.volume * State::Get().masterMusicVolume, 0.f, 1.f));
+        if (music.delta != 0.f) {
+            music.currentVolume += music.delta * music.fadeSpeed * hub::GetDeltaTime();
+            if (music.currentVolume < 0.f) {
+                music.currentVolume = 0.f;
+                music.delta = 0.f;
+                PauseMusicStream(music.music);
+            } else if (music.currentVolume > music.volume) {
+                music.currentVolume = music.volume;
+                music.delta = 0.f;
+            }
+        }
+
+        SetMusicVolume(music.music, glm::clamp(music.currentVolume * State::Get().masterMusicVolume, 0.f, 1.f));
         sound::UpdateMusic(music.music);
     });
 
@@ -19,25 +31,5 @@ void work::UpdateSounds() {
             SetSoundVolume(s, vol);
         }
         sound.elapsedTime += hub::GetDeltaTime();
-    });
-}
-
-void work::SetMusicPlaying(bool playing) {
-    auto& state = State::Get();
-    state.musicPlaying = playing;
-    hub::Reg().view<comp::Music, tag::GameMusic>().each([&playing](comp::Music& music) {
-        if (playing) {
-            sound::ResumeMusic(music.music);
-        } else {
-            sound::PauseMusic(music.music);
-        }
-    });
-
-    hub::Reg().view<comp::Music, tag::MenuMusic>().each([&playing](comp::Music& music) {
-        if (!playing) {
-            sound::ResumeMusic(music.music);
-        } else {
-            sound::PauseMusic(music.music);
-        }
     });
 }

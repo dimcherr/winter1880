@@ -17,6 +17,11 @@ struct Camera {
     float movementSpeed {5.f};
     Vec offset {0.f, 1.2f, 0.f};
 
+    float minPitch {-30.f};
+    float maxPitch {30.f};
+    float minYaw {-15.f};
+    float maxYaw {15.f};
+
     float bobbingTime {0.f};
     float bobbingDelta {0.f};
     float bobbingSpeed {5.f};

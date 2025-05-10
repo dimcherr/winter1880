@@ -7,6 +7,19 @@ namespace comp {
 struct Music {
     ::Music music {};
     float volume {0.5f};
+    float currentVolume {0.5f};
+    float delta {0.f};
+    float fadeSpeed {0.1f};
+
+    void SetPlayed(bool played) {
+        if (played) {
+            ResumeMusicStream(music);
+            currentVolume = 0.f;
+            delta = 1.f;
+        } else {
+            delta = -1.f;
+        }
+    }
 };
 
 }
@@ -15,7 +28,7 @@ template <>
 struct CompBuilder<comp::Music> : public BaseCompBuilder<comp::Music> {
     CompBuilder& path(StringView path) {
         comp->music = sound::LoadMusic(path);
-        sound::PlayMusic(comp->music, 20.f);
+        sound::PlayMusic(comp->music);
         sound::PauseMusic(comp->music);
         return *this;
     }

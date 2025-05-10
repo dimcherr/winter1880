@@ -28,7 +28,9 @@ struct ModelDesc {
 List<ModelDesc> modelDescs {
     {"Decor", [](Entity, Entity) {}},
     {"Static", prefab::StaticBody},
-    {"Door", prefab::Door},
+    {"Door", [](Entity entity, Entity modelAsset) { prefab::Door(entity, modelAsset, -80.f); }},
+    {"RightMainGate", [](Entity entity, Entity modelAsset) { prefab::MainGate(entity, modelAsset, -80.f); }},
+    {"LeftMainGate", [](Entity entity, Entity modelAsset) { prefab::MainGate(entity, modelAsset, 80.f); }},
     {"Collision", prefab::Collision},
     {"SlidingManhole", prefab::SlidingManhole},
     {"GearCW", [](Entity entity, Entity modelAsset) { prefab::Gear(entity, modelAsset, 1.f); }},
@@ -155,22 +157,24 @@ static void Process(cgltf_data* data) {
     std::unordered_map<cgltf_material*, Entity> materials {};
     for (int i = 0; i < data->materials_count; ++i) {
         auto& material = data->materials[i];
-        Entity materialEntity = hub::Create()
-            .Add<comp::MaterialPBR>()
-                .name(material.name)
-                .baseColorTexture(textureAssets[material.pbr_metallic_roughness.base_color_texture.texture])
-                .normalTexture(textureAssets[material.normal_texture.texture])
-                .ormTexture(textureAssets[material.pbr_metallic_roughness.metallic_roughness_texture.texture])
-                .metallicFactor(material.pbr_metallic_roughness.metallic_factor)
-                .roughnessFactor(material.pbr_metallic_roughness.roughness_factor)
-                .normalScale(material.normal_texture.scale)
-                .Next()
-            .GetEntity();
-        if (material.emissive_texture.texture) {
+        Entity materialEntity = hub::Create().GetEntity();
+        if (material.pbr_metallic_roughness.metallic_roughness_texture.texture) {
             hub::Modify(materialEntity)
-                .Modify<comp::MaterialPBR>().emissiveTexture(textureAssets[material.emissive_texture.texture]).emissiveFactor(1.f).Next();
+                .Add<comp::MaterialPBR>()
+                    .name(material.name)
+                    .baseColorTexture(textureAssets[material.pbr_metallic_roughness.base_color_texture.texture])
+                    .normalTexture(textureAssets[material.normal_texture.texture])
+                    .ormTexture(textureAssets[material.pbr_metallic_roughness.metallic_roughness_texture.texture])
+                    .metallicFactor(material.pbr_metallic_roughness.metallic_factor)
+                    .roughnessFactor(material.pbr_metallic_roughness.roughness_factor)
+                    .normalScale(material.normal_texture.scale)
+                    .Next();
+            if (material.emissive_texture.texture) {
+                hub::Modify(materialEntity)
+                    .Modify<comp::MaterialPBR>().emissiveTexture(textureAssets[material.emissive_texture.texture]).emissiveFactor(1.f).Next();
+            }
+            materials[&material] = materialEntity;
         }
-        materials[&material] = materialEntity;
     }
 
     std::unordered_map<cgltf_mesh*, Entity> modelAssets {};
@@ -276,7 +280,7 @@ static void Process(cgltf_data* data) {
 }
 
 static void SpawnModel(const cgltf_node& node, Entity parentEntity, std::unordered_map<cgltf_mesh*, Entity>& modelAssets, std::unordered_map<cgltf_primitive*, Entity>& meshAssets) {
-    if (glm::length(Vec {node.translation[0], node.translation[1], -node.translation[2]}) > 90) return;
+    if (glm::length(Vec {node.translation[0], node.translation[1], -node.translation[2]}) > 300) return;
     Entity modelEntity {};
     if (node.mesh) {
         modelEntity = hub::Create()

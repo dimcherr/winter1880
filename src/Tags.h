@@ -21,7 +21,11 @@ struct SoundDoorOpen {};
 struct SoundDoorClose {};
 struct SoundFlashlightOn {};
 struct SoundFlashlightOff {};
+struct SoundStepSnow {};
+struct SoundStepConcrete {};
+struct MusicWind {};
 struct CueIntro {};
 struct ButtonPlay {};
+struct MainGate {};
 
 }

@@ -48,6 +48,11 @@ struct CompBuilder<comp::Sound> : public BaseCompBuilder<comp::Sound> {
         comp->period = min;
         return *this;
     }
+
+    CompBuilder& volume(float volume) {
+        comp->volume = volume;
+        return *this;
+    }
 };
 
 template <>

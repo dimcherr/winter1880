@@ -6,6 +6,14 @@
 #include "tun/input.h"
 #include "Lang.h"
 
+enum class GamePhase {
+    intro,
+    instructions,
+    main,
+    machinesRunning,
+    outro,
+};
+
 class State {
 public:
     entt::registry reg {};
@@ -39,6 +47,9 @@ public:
     Entity blackTexture {entt::null};
 
     Lang currentLang {Lang::eng};
+
+    GamePhase phase {GamePhase::intro};
+    int introStage {0};
 
     static State& Get() {
         static State state;

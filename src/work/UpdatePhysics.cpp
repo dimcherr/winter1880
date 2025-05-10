@@ -25,7 +25,7 @@ void work::UpdatePhysics() {
     physState.physicsSystem.Update(hub::GetDeltaTime(), collisionSteps, &physState.tempAllocator, &physState.jobSystem);
 
 
-    hub::Reg().view<Character, TransformComp, CapsuleShape, Camera, comp::Sound, tag::Current>().each([](Character& character, TransformComp& transform, CapsuleShape& shape, Camera& camera, comp::Sound& sound) {
+    hub::Reg().view<Character, TransformComp, CapsuleShape, Camera, tag::Current>().each([](Character& character, TransformComp& transform, CapsuleShape& shape, Camera& camera) {
         if (!character.character) {
             JPH::CharacterVirtualSettings settings {};
             settings.mShape = new JPH::CapsuleShape(shape.halfHeight, shape.radius);
@@ -50,6 +50,7 @@ void work::UpdatePhysics() {
                 }
             }
 
+            auto& sound = hub::Reg().get<comp::Sound>(transform.translation.z < -12.f ? hub::Reg().view<tag::SoundStepSnow>().back() : hub::Reg().view<tag::SoundStepConcrete>().back());
             if (State::Get().keys[(int)Key::shift]) {
                 sound.minPeriod = 0.7 * 0.65f;
                 sound.maxPeriod = 0.7 * 0.65f;
@@ -74,22 +75,33 @@ void work::UpdatePhysics() {
 
             // update movement
             character.movementVector = tun::vecZero;
-            if (hub::IsKeyPressed(Key::w)) {
-                character.movementVector += Vec(0.f, 0.f, 1.f);
-            }
-            if (hub::IsKeyPressed(Key::s)) {
-                character.movementVector += Vec(0.f, 0.f, -1.f);
-            }
-            if (hub::IsKeyPressed(Key::a)) {
-                character.movementVector += Vec(-1.f, 0.f, 0.f);
-            }
-            if (hub::IsKeyPressed(Key::d)) {
-                character.movementVector += Vec(1.f, 0.f, 0.f);
-            }
-            //character.jumping = hub::IsKeyPressed(Key::space);
-            if (glm::length(character.movementVector) > 0.001f) {
-                Quat rot = Quat({0.f, camera.yaw, 0.f});
-                character.movementVector = rot * glm::normalize(character.movementVector);
+            if (State::Get().phase == GamePhase::intro) {
+                if (hub::IsKeyPressed(Key::w)) {
+                    character.movementVector += Vec(0.f, 0.f, 1.f);
+                }
+                character.jumping = hub::IsKeyPressed(Key::space);
+                if (glm::length(character.movementVector) > 0.001f) {
+                    Quat rot = Quat({0.f, camera.yaw, 0.f});
+                    character.movementVector = rot * glm::normalize(character.movementVector);
+                }
+            } else {
+                if (hub::IsKeyPressed(Key::w)) {
+                    character.movementVector += Vec(0.f, 0.f, 1.f);
+                }
+                if (hub::IsKeyPressed(Key::s)) {
+                    character.movementVector += Vec(0.f, 0.f, -1.f);
+                }
+                if (hub::IsKeyPressed(Key::a)) {
+                    character.movementVector += Vec(-1.f, 0.f, 0.f);
+                }
+                if (hub::IsKeyPressed(Key::d)) {
+                    character.movementVector += Vec(1.f, 0.f, 0.f);
+                }
+                character.jumping = hub::IsKeyPressed(Key::space);
+                if (glm::length(character.movementVector) > 0.001f) {
+                    Quat rot = Quat({0.f, camera.yaw, 0.f});
+                    character.movementVector = rot * glm::normalize(character.movementVector);
+                }
             }
 
             JPH::CharacterVirtual::ExtendedUpdateSettings updateSettings {};
@@ -99,10 +111,10 @@ void work::UpdatePhysics() {
             float deltaTime = hub::GetDeltaTime();
             if (character.character->GetGroundState() == JPH::CharacterVirtual::EGroundState::OnGround) {
                 JPH::Vec3 jumpVel = character.jumping ? Convert(character.jumpStrength * Vec(0.f, 1.f, 0.f)) : JPH::Vec3::sZero();
-                character.character->SetLinearVelocity((physicsSystem.GetGravity() + movementVel + jumpVel) * deltaTime + character.character->GetGroundVelocity());
+                character.character->SetLinearVelocity((physicsSystem.GetGravity() * deltaTime + movementVel + jumpVel) + character.character->GetGroundVelocity());
             } else {
                 JPH::Vec3 verticalVel = JPH::Vec3(0.f, character.character->GetLinearVelocity().GetY(), 0.f);
-                character.character->SetLinearVelocity((physicsSystem.GetGravity() + movementVel) * deltaTime + verticalVel);
+                character.character->SetLinearVelocity((physicsSystem.GetGravity() * deltaTime + movementVel) + verticalVel);
             }
             character.character->ExtendedUpdate(
                 hub::GetDeltaTime(),

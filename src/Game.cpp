@@ -84,6 +84,7 @@ void game::Create() {
     gltf::Load("res/models/Winter1880.glb");
 
 
+    Entity blackScreen = prefab::BlackScreen();
 
     Entity tooltip = prefab::Tooltip();
 
@@ -106,15 +107,15 @@ void game::Create() {
 
 
     Entity character = hub::Create()
-        .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).Next()
+        .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).zplanes(0.1f, 1000.f).Next()
         .Tag<tag::FirstPerson>()
         .Tag<tag::Current>()
-        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(1000.f, 300.f).jumpStrength(0.f).Next()
+        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(3.f, 6.f).jumpStrength(0.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
-        .Add<comp::Sound>().foleys("res/sounds/stepconcrete", 3).period(0.5f, 0.53f).Next()
         .GetEntity();
     auto& characterTransform = hub::AddComp<TransformComp>(character);
-    characterTransform.translation = {5.38f, 4.85f, -7.6f};
+    //characterTransform.translation = {5.38f, 4.85f, -7.6f};
+    characterTransform.translation = {0.f, 1.f, -250.f};
     characterTransform.Update();
     
     Entity flashlight = prefab::Flashlight();
@@ -127,10 +128,24 @@ void game::Create() {
         .Add<comp::Music>().path("res/sounds/Winter1880.ogg").volume(0.2f).Next()
         .Tag<tag::MenuMusic>()
         .GetEntity();
+    Entity backgroundMusicWind = hub::Create()
+        .Add<comp::Music>().path("res/sounds/wind.ogg").volume(0.2f).Next()
+        .Tag<tag::MusicWind>()
+        .GetEntity();
 
     Entity booSound = hub::Create()
         .Add<comp::Sound>().foleys("res/sounds/boo", 3).Next()
         .Tag<tag::SoundBoo>()
+        .GetEntity();
+
+    Entity snowStepSound = hub::Create()
+        .Add<comp::Sound>().foleys("res/sounds/stepsnow", 3).period(0.5f, 0.53f).Next()
+        .Tag<tag::SoundStepSnow>()
+        .GetEntity();
+
+    Entity concreteStepSound = hub::Create()
+        .Add<comp::Sound>().foleys("res/sounds/stepconcrete", 3).period(0.5f, 0.53f).volume(0.5f).Next()
+        .Tag<tag::SoundStepConcrete>()
         .GetEntity();
 
     hub::Create()
@@ -168,21 +183,24 @@ void game::Create() {
         .Tag<tag::SoundFlashlightOff>()
         .GetEntity();
 
-
     List<Entity> subtitles {};
-    Entity introSubtitle = prefab::Subtitle(&LangStrings::testSubtitle0, 3.5f);
+    Entity introSubtitle = prefab::Subtitle(&LangStrings::subtitle0, 3.5f);
     hub::AddTag<tag::CueIntro>(introSubtitle);
     subtitles.push_back(introSubtitle);
-    subtitles.push_back(prefab::Subtitle(&LangStrings::testSubtitle1, 5.5f));
+    subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle1, 2.5f));
+    subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle2, 5.5f));
+    subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle3, 3.5f));
+    subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle4, 3.5f));
+    subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle5, 6.5f));
+
     for (int i = 0; i < subtitles.size() - 1; ++i) {
         auto& sub = hub::Reg().get<SubtitleComp>(subtitles[i]);
         sub.next = subtitles[i + 1];
     }
 
-
-    work::SetMusicPlaying(false);
     State::Get().paused = true;
     onWebLoad();
+    work::SetMusicMenuPlayed(true);
 }
 
 void game::Update() {
@@ -190,9 +208,9 @@ void game::Update() {
     work::UpdateSounds();
 
     if (!state.paused) {
+        work::UpdateTimeline();
         work::UpdateDoors();
         work::UpdatePhysics();
-        work::UpdateCountdown();
         work::UpdateFlashlight();
         work::UpdateSubtitles();
         work::UpdateGears();
@@ -225,6 +243,8 @@ void game::Update() {
     work::DrawPBR();
 
     if (gl::BeginDrawUI()) {
+        work::DrawBlackScreen();
+        work::DrawText3D();
         if (state.paused) {
             work::DrawMenu();
             work::DrawSliders();
@@ -285,26 +305,29 @@ void game::OnKeyDown(Key key) {
     auto& state = State::Get();
     if (key == Key::tab) {
         state.paused = !state.paused;
-        work::SetMusicPlaying(!state.paused);
         hub::LockMouse(!state.paused);
+        work::SetMusicMenuPlayed(state.paused);
+        if (state.phase == GamePhase::intro) {
+            work::SetMusicWindPlayed(!state.paused);
+        }
         return;
     }
     if (state.paused) return;
 
 
-    if (key == Key::v) {
-        work::SwitchCamera();
-    }
+    //if (key == Key::v) {
+        //work::SwitchCamera();
+    //}
 
-    if (key == Key::q) {
-        hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
-            subtitle.running = false;
-            subtitle.time = 0.f;
-        });
-        auto& introSub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueIntro, SubtitleComp>().back());
-        introSub.running = true;
-        introSub.time = 0.f;
-    }
+    //if (key == Key::q) {
+        //hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+            //subtitle.running = false;
+            //subtitle.time = 0.f;
+        //});
+        //auto& introSub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueIntro, SubtitleComp>().back());
+        //introSub.running = true;
+        //introSub.time = 0.f;
+    //}
 
     if (key == Key::f) {
         hub::Reg().view<FlashlightComp>().each([](FlashlightComp& flashlight) {
@@ -373,8 +396,11 @@ void game::OnKeyDown(Key key) {
 
 static void OnClickPlayButton(Entity entity) {
     State::Get().paused = false;
-    work::SetMusicPlaying(true);
     hub::LockMouse(true);
+    work::SetMusicMenuPlayed(false);
+    if (State::Get().phase == GamePhase::intro) {
+        work::SetMusicWindPlayed(true);
+    }
 }
 
 static void RestartGame(Entity entity) {
@@ -394,6 +420,5 @@ static void RestartGame(Entity entity) {
         sound::StopMusic(music.music);
         sound::PlayMusic(music.music, 20.f);
     });
-    work::SetMusicPlaying(true);
     hub::LockMouse(true);
 }

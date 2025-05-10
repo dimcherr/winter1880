@@ -10,9 +10,9 @@ namespace comp {
 struct MaterialPBR {
     String name {};
     Color tint {tun::white};
-    Entity baseColorTexture {};
-    Entity normalTexture {};
-    Entity ormTexture {};
+    Entity baseColorTexture {entt::null};
+    Entity normalTexture {entt::null};
+    Entity ormTexture {entt::null};
     Entity emissiveTexture {entt::null};
     float metallicFactor {0.5f};
     float roughnessFactor {0.5f};
