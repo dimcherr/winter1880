@@ -91,22 +91,24 @@ void work::UpdatePhysics() {
                     character.movementVector = rot * glm::normalize(character.movementVector);
                 }
             } else {
-                if (hub::IsKeyPressed(Key::w)) {
-                    character.movementVector += Vec(0.f, 0.f, 1.f);
-                }
-                if (hub::IsKeyPressed(Key::s)) {
-                    character.movementVector += Vec(0.f, 0.f, -1.f);
-                }
-                if (hub::IsKeyPressed(Key::a)) {
-                    character.movementVector += Vec(-1.f, 0.f, 0.f);
-                }
-                if (hub::IsKeyPressed(Key::d)) {
-                    character.movementVector += Vec(1.f, 0.f, 0.f);
-                }
-                character.jumping = hub::IsKeyPressed(Key::space);
-                if (glm::length(character.movementVector) > 0.001f) {
-                    Quat rot = Quat({0.f, camera.yaw, 0.f});
-                    character.movementVector = rot * glm::normalize(character.movementVector);
+                if (State::Get().phase != GamePhase::outro) {
+                    if (hub::IsKeyPressed(Key::w)) {
+                        character.movementVector += Vec(0.f, 0.f, 1.f);
+                    }
+                    if (hub::IsKeyPressed(Key::s)) {
+                        character.movementVector += Vec(0.f, 0.f, -1.f);
+                    }
+                    if (hub::IsKeyPressed(Key::a)) {
+                        character.movementVector += Vec(-1.f, 0.f, 0.f);
+                    }
+                    if (hub::IsKeyPressed(Key::d)) {
+                        character.movementVector += Vec(1.f, 0.f, 0.f);
+                    }
+                    character.jumping = hub::IsKeyPressed(Key::space);
+                    if (glm::length(character.movementVector) > 0.001f) {
+                        Quat rot = Quat({0.f, camera.yaw, 0.f});
+                        character.movementVector = rot * glm::normalize(character.movementVector);
+                    }
                 }
             }
 

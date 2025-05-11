@@ -29,6 +29,7 @@ List<ModelDesc> modelDescs {
     {"Decor", [](Entity, Entity) {}},
     {"Static", prefab::StaticBody},
     {"Door", [](Entity entity, Entity modelAsset) { prefab::Door(entity, modelAsset, -80.f); }},
+    {"FinalFurnaceDoor", [](Entity entity, Entity modelAsset) { prefab::FurnaceDoor(entity, modelAsset, -80.f); }},
     {"RightMainGate", [](Entity entity, Entity modelAsset) { prefab::MainGate(entity, modelAsset, -80.f); }},
     {"LeftMainGate", [](Entity entity, Entity modelAsset) { prefab::MainGate(entity, modelAsset, 80.f); }},
     {"Collision", prefab::Collision},
@@ -45,6 +46,7 @@ List<ModelDesc> modelDescs {
     {"LeverBaseMainRight", [](Entity entity, Entity modelAsset) { prefab::LeverBase(entity, modelAsset, 1); }},
     {"InstructionEng", [](Entity entity, Entity modelAsset) { prefab::Instruction(entity, modelAsset, Lang::eng); }},
     {"InstructionRus", [](Entity entity, Entity modelAsset) { prefab::Instruction(entity, modelAsset, Lang::rus); }},
+    {"Furnace", [](Entity entity, Entity modelAsset) { prefab::Furnace(entity, modelAsset); }},
 };
 
 static void Process(cgltf_data* data);

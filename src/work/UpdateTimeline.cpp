@@ -7,6 +7,7 @@
 #include "comp/Sound.h"
 #include "comp/Door.h"
 #include "comp/Camera.h"
+#include "comp/PointLightComp.h"
 #include "Tags.h"
 
 void work::UpdateTimeline() {
@@ -58,6 +59,14 @@ void work::UpdateTimeline() {
                 doorOpenSound.Play();
             });
 
+            hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+                subtitle.running = false;
+                subtitle.time = 0.f;
+            });
+            auto& introSub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueInstructions, SubtitleComp>().back());
+            introSub.running = true;
+            introSub.time = 0.f;
+
             State::Get().introStage = 5;
         }
 
@@ -73,8 +82,58 @@ void work::UpdateTimeline() {
                 camera.minPitch = -70.f;
                 camera.maxPitch = 70.f;
             });
+            work::SetMusicMenuPlayed(true);
+            work::SetMusicWindPlayed(false);
         }
     }
+
+    auto& characterTransform = hub::Reg().get<TransformComp>(hub::Reg().view<comp::Character>().back());
+    auto& furnaceTransform = hub::Reg().get<TransformComp>(hub::Reg().view<tag::Furnace>().back());
+    float distanceToFurnace = glm::distance(characterTransform.translation, furnaceTransform.translation);
+    //tun::log("DISTANCE TO FURNACE: {}", distanceToFurnace);
+    //tun::log("HEIGHT: {}", characterTransform.translation);
+    if (distanceToFurnace < 5.f && State::Get().phase != GamePhase::outro) {
+        State::Get().phase = GamePhase::outro;
+        hub::Reg().view<tag::FurnaceDoor, comp::Door>().each([](comp::Door& door) {
+            door.stateDelta = -1.f;
+        });
+        // PLAY CUE
+        hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+            subtitle.running = false;
+            subtitle.time = 0.f;
+        });
+        auto& sub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueOutro, SubtitleComp>().back());
+        sub.running = true;
+        sub.time = 0.f;
+        // PLAY CUE
+    }
+
+    if (characterTransform.translation.y < -1.f && !State::Get().descendedToFurnace) {
+        State::Get().descendedToFurnace = true;
+        // PLAY CUE
+        hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+            subtitle.running = false;
+            subtitle.time = 0.f;
+        });
+        auto& sub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueStairwell, SubtitleComp>().back());
+        sub.running = true;
+        sub.time = 0.f;
+        // PLAY CUE
+    }
+
+
+    if (State::Get().phase == GamePhase::outro) {
+        work::SetMusicMenuPlayed(false);
+        work::SetMusicWindPlayed(true);
+        hub::Reg().view<PointLightComp>().each([](PointLightComp& light) {
+            light.intensity += hub::GetDeltaTime() * 15.f;
+        });
+        hub::Reg().view<BlackScreenComp>().each([](BlackScreenComp& blackScreen) {
+            blackScreen.delta = 1.f;
+            blackScreen.speed = 0.02f;
+        });
+    }
+
 
     //hub::Reg().view<comp::Character, TransformComp>().each([](comp::Character& character) {
 

@@ -23,13 +23,25 @@ struct SoundFlashlightOn {};
 struct SoundFlashlightOff {};
 struct SoundStepSnow {};
 struct SoundStepConcrete {};
+struct SoundLever {};
+struct SoundPlacement {};
 struct MusicWind {};
+struct MusicGears {};
 struct CueIntro {};
+struct CueInstructions {};
+struct CueGear {};
+struct CueGearSet {};
+struct CueGateOpen {};
+struct CueStairwell {};
+struct CueFurnaceDoorOpen {};
+struct CueOutro {};
 struct ButtonPlay {};
 struct MainGate {};
 struct InstructionEng {};
 struct InstructionRus {};
 struct LeverMainLeft {};
 struct LeverMainRight {};
+struct Furnace {};
+struct FurnaceDoor {};
 
 }

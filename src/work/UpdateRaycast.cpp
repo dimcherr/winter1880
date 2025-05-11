@@ -8,6 +8,7 @@
 #include "comp/BodyComp.h"
 #include "comp/GearSlotComp.h"
 #include "comp/GearPickableComp.h"
+#include "comp/SubtitleComp.h"
 #include "comp/BoxShape.h"
 #include "comp/Model.h"
 #include "comp/BoundsWidget.h"
@@ -46,7 +47,7 @@ void work::UpdateRaycast() {
 
     if (hub::Reg().valid(character.pickable)) {
         auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-        text.text = "[G] Положить";
+        text.text = tun::formatToString("[G] {}", LangStrings::putDown.Get());
         text.color = tun::white;
         bounds.visible = true;
         bounds.parentAnchors.vertical = tun::center;
@@ -58,19 +59,22 @@ void work::UpdateRaycast() {
         State::Get().currentObject = entt::null;
         hub::Reg().view<BodyComp, BoxShape, Model, TransformComp, comp::Door>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const TransformComp& modelTransform, comp::Door& door) {
             if (!State::Get().firstPerson || body.id != bodyID) return;
+            if (hub::Reg().any_of<tag::MainGate>(entity)) return;
 
             auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-            if (door.doorState < 0.5f) {
-                text.text = "[E] Открыть";
+            if (door.doorState < 0.1f && State::Get().phase != GamePhase::outro) {
+                //text.text = "[E] Открыть";
+                text.text = tun::formatToString("[E] {}", LangStrings::open.Get());
                 text.color = tun::white;
+                bounds.visible = true;
+                State::Get().currentObject = entity;
+                bounds.parentAnchors.vertical = tun::center;
+                bounds.pos = {0.f, 128.f};
             } else {
-                text.text = "[E] Закрыть";
-                text.color = tun::white;
+                //text.text = "[E] Закрыть";
+                //text.text = tun::formatToString("[E] {}", LangStrings::close.Get());
+                //text.color = tun::white;
             }
-            bounds.visible = true;
-            bounds.parentAnchors.vertical = tun::center;
-            bounds.pos = {0.f, 128.f};
-            State::Get().currentObject = entity;
         });
 
         hub::Reg().view<BodyComp, BoxShape, Model, TransformComp, LeverBaseComp>().each([&bodyID, &hit](Entity entity, const BodyComp& body, const BoxShape& shape, const Model& model, const TransformComp& modelTransform, LeverBaseComp& leverBase) {
@@ -88,7 +92,8 @@ void work::UpdateRaycast() {
 
             auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
             if (lever.state == 0.f) {
-                text.text = "[E] Потянуть";
+                //text.text = "[E] Потянуть";
+                text.text = tun::formatToString("[E] {}", LangStrings::pull.Get());
                 text.color = tun::white;
                 bounds.visible = true;
                 bounds.parentAnchors.vertical = tun::center;
@@ -101,7 +106,8 @@ void work::UpdateRaycast() {
             if (!State::Get().firstPerson || body.id != bodyID) return;
 
             auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-            text.text = "[E] Взять";
+            //text.text = "[E] Взять";
+            text.text = tun::formatToString("[E] {}", LangStrings::take.Get());
             text.color = tun::white;
             bounds.visible = true;
             bounds.parentAnchors.vertical = tun::center;
@@ -117,7 +123,8 @@ void work::UpdateRaycast() {
             if (hub::Reg().valid(character.pickable)) {
                 if (hub::Reg().any_of<GearPickableComp>(character.pickable)) {
                     auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                    text.text = "[E] Вставить";
+                    //text.text = "[E] Вставить";
+                    text.text = tun::formatToString("[E] {}", LangStrings::placeInto.Get());
                     text.color = tun::white;
                     bounds.visible = true;
                     bounds.parentAnchors.vertical = tun::center;
@@ -125,7 +132,8 @@ void work::UpdateRaycast() {
                     State::Get().currentObject = entity;
                 } else {
                     auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                    text.text = "Не подходит";
+                    //text.text = "Не подходит";
+                    text.text = tun::formatToString("{}", LangStrings::wrongPiece.Get());
                     text.color = tun::white;
                     bounds.visible = true;
                     bounds.parentAnchors.vertical = tun::center;
@@ -134,12 +142,26 @@ void work::UpdateRaycast() {
                 }
             } else {
                 auto [text, bounds] = hub::Reg().get<TextWidgetComp, comp::BoundsWidget>(hub::Reg().view<tag::Tooltip>().back());
-                text.text = "Нужна деталь";
+                //text.text = "Нужна деталь";
+                text.text = tun::formatToString("{}", LangStrings::needAPart.Get());
                 text.color = tun::white;
                 bounds.visible = true;
                 bounds.parentAnchors.vertical = tun::center;
                 bounds.pos = {0.f, 128.f};
                 State::Get().currentObject = entity;
+
+                if (!State::Get().lookedAtTheGearSlot) {
+                    State::Get().lookedAtTheGearSlot = true;
+                    // PLAY CUE
+                    hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+                        subtitle.running = false;
+                        subtitle.time = 0.f;
+                    });
+                    auto& sub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueGear, SubtitleComp>().back());
+                    sub.running = true;
+                    sub.time = 0.f;
+                    // PLAY CUE
+                }
             }
         });
     } else {

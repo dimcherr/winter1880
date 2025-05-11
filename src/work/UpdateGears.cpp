@@ -6,6 +6,7 @@
 #include "comp/GearSlotComp.h"
 #include "comp/SlidingManholeComp.h"
 #include "comp/BodyComp.h"
+#include "comp/SubtitleComp.h"
 #include "Tags.h"
 #include "tun/physics.h"
 
@@ -19,6 +20,19 @@ void work::UpdateGears() {
         hub::Reg().view<SlidingManholeComp>().each([](SlidingManholeComp& manhole) {
             manhole.delta = 1.f;
         });
+
+        if (!State::Get().manholeOpened) {
+            State::Get().manholeOpened = true;
+            // PLAY CUE
+            hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+                subtitle.running = false;
+                subtitle.time = 0.f;
+            });
+            auto& sub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueGateOpen, SubtitleComp>().back());
+            sub.running = true;
+            sub.time = 0.f;
+            // PLAY CUE
+        }
     }
 
     hub::Reg().view<SlidingManholeComp, TransformComp, BodyComp>().each([] (SlidingManholeComp& manhole, TransformComp& transform, BodyComp& body) {

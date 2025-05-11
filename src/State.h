@@ -32,6 +32,12 @@ public:
     float masterMusicVolume {0.5f};
     float masterSoundVolume {0.5f};
 
+    bool lookedAtTheGearSlot {false};
+    bool firstGearIsSet {false};
+    bool manholeOpened {false};
+    bool descendedToFurnace {false};
+    bool furnaceDoorOpened {false};
+
     Matrix viewProj {1.f};
     Vec viewPos {};
     bool firstPerson {true};

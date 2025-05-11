@@ -120,7 +120,7 @@ void game::Create() {
         .Add<comp::Camera>().rotationSensitivity(0.5f).update(hub::GetScreenSize().x, hub::GetScreenSize().y).zplanes(0.1f, 1000.f).Next()
         .Tag<tag::FirstPerson>()
         .Tag<tag::Current>()
-        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(3.f, 6.f).jumpStrength(0.f).Next()
+        .Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(5.f, 8.f).jumpStrength(0.f).Next()
         //.Add<comp::Character>().mass(70.f).maxSlopeAngle(60.f).maxStrength(100.f).speed(100.f, 6.f).jumpStrength(0.f).Next()
         .Add<comp::CapsuleShape>().halfHeight(0.6f).radius(0.3f).Next()
         .GetEntity();
@@ -144,6 +144,16 @@ void game::Create() {
         .Tag<tag::MusicWind>()
         .GetEntity();
 
+    Entity gearsMusic = hub::Create()
+        .Add<comp::Music>().path("res/sounds/industrialAmbient.ogg").volume(0.5f).Next()
+        .Tag<tag::MusicGears>()
+        .GetEntity();
+    hub::Reg().view<tag::MusicGears, comp::Music>().each([](comp::Music& music) {
+        music.SetPlayed(true);
+        music.currentVolume = 0.f;
+        music.volume = 0.f;
+    });
+
     Entity booSound = hub::Create()
         .Add<comp::Sound>().foleys("res/sounds/boo", 3).Next()
         .Tag<tag::SoundBoo>()
@@ -157,6 +167,16 @@ void game::Create() {
     Entity concreteStepSound = hub::Create()
         .Add<comp::Sound>().foleys("res/sounds/stepconcrete", 3).period(0.5f, 0.53f).volume(0.2f).Next()
         .Tag<tag::SoundStepConcrete>()
+        .GetEntity();
+
+    Entity leverSound = hub::Create()
+        .Add<comp::Sound>().path("res/sounds/lever.ogg").volume(0.2f).Next()
+        .Tag<tag::SoundLever>()
+        .GetEntity();
+
+    Entity placementSound = hub::Create()
+        .Add<comp::Sound>().path("res/sounds/doorClose.ogg").volume(0.2f).Next()
+        .Tag<tag::SoundPlacement>()
         .GetEntity();
 
     hub::Create()
@@ -203,10 +223,87 @@ void game::Create() {
     subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle3, 3.5f));
     subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle4, 3.5f));
     subtitles.push_back(prefab::Subtitle(&LangStrings::subtitle5, 6.5f));
-
     for (int i = 0; i < subtitles.size() - 1; ++i) {
         auto& sub = hub::Reg().get<SubtitleComp>(subtitles[i]);
         sub.next = subtitles[i + 1];
+    }
+
+    List<Entity> subtitlesInstructions {};
+    Entity introSubtitleInstructions = prefab::Subtitle(&LangStrings::subtitle6, 4.5f);
+    hub::AddTag<tag::CueInstructions>(introSubtitleInstructions);
+    subtitlesInstructions.push_back(introSubtitleInstructions);
+    subtitlesInstructions.push_back(prefab::Subtitle(&LangStrings::subtitle7, 5.5f));
+    subtitlesInstructions.push_back(prefab::Subtitle(&LangStrings::subtitle8, 5.5f));
+    subtitlesInstructions.push_back(prefab::Subtitle(&LangStrings::subtitle9, 5.5f));
+    for (int i = 0; i < subtitlesInstructions.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesInstructions[i]);
+        sub.next = subtitlesInstructions[i + 1];
+    }
+
+//struct CueGear {};
+//struct CueGearSet {};
+//struct CueGateOpen {};
+//struct CueStairwell {};
+//struct CueFurnaceDoorOpen {};
+
+    List<Entity> subtitlesGear {};
+    Entity firstSubtitleGear = prefab::Subtitle(&LangStrings::subtitleGear, 4.5f);
+    hub::AddTag<tag::CueGear>(firstSubtitleGear);
+    subtitlesGear.push_back(firstSubtitleGear);
+    subtitlesGear.push_back(prefab::Subtitle(&LangStrings::subtitleGear1, 5.5f));
+    for (int i = 0; i < subtitlesGear.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesGear[i]);
+        sub.next = subtitlesGear[i + 1];
+    }
+
+    List<Entity> subtitlesGearSet {};
+    Entity firstSubtitleGearSet = prefab::Subtitle(&LangStrings::subtitleGearSet, 4.5f);
+    hub::AddTag<tag::CueGearSet>(firstSubtitleGearSet);
+    subtitlesGearSet.push_back(firstSubtitleGearSet);
+    subtitlesGearSet.push_back(prefab::Subtitle(&LangStrings::subtitleGearSet1, 5.5f));
+    for (int i = 0; i < subtitlesGearSet.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesGearSet[i]);
+        sub.next = subtitlesGearSet[i + 1];
+    }
+
+    List<Entity> subtitlesGateOpen {};
+    Entity firstSubtitleGateOpen = prefab::Subtitle(&LangStrings::subtitleGateOpen, 4.5f);
+    hub::AddTag<tag::CueGateOpen>(firstSubtitleGateOpen);
+    subtitlesGateOpen.push_back(firstSubtitleGateOpen);
+    subtitlesGateOpen.push_back(prefab::Subtitle(&LangStrings::subtitleGateOpen1, 5.5f));
+    for (int i = 0; i < subtitlesGateOpen.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesGateOpen[i]);
+        sub.next = subtitlesGateOpen[i + 1];
+    }
+
+    List<Entity> subtitlesStairwell {};
+    Entity firstSubtitleStairwell = prefab::Subtitle(&LangStrings::subtitleStairwell, 4.5f);
+    hub::AddTag<tag::CueStairwell>(firstSubtitleStairwell);
+    subtitlesStairwell.push_back(firstSubtitleStairwell);
+    subtitlesStairwell.push_back(prefab::Subtitle(&LangStrings::subtitleStairwell1, 5.5f));
+    for (int i = 0; i < subtitlesStairwell.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesStairwell[i]);
+        sub.next = subtitlesStairwell[i + 1];
+    }
+
+    List<Entity> subtitlesFurnace {};
+    Entity firstSubtitleFurnace = prefab::Subtitle(&LangStrings::subtitleFurnaceDoorOpen, 4.5f);
+    hub::AddTag<tag::CueFurnaceDoorOpen>(firstSubtitleFurnace);
+    subtitlesFurnace.push_back(firstSubtitleFurnace);
+    subtitlesFurnace.push_back(prefab::Subtitle(&LangStrings::subtitleFurnaceDoorOpen1, 5.5f));
+    for (int i = 0; i < subtitlesFurnace.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesFurnace[i]);
+        sub.next = subtitlesFurnace[i + 1];
+    }
+
+    List<Entity> subtitlesOutro {};
+    Entity firstSubtitleOutro = prefab::Subtitle(&LangStrings::subtitleOutro, 4.5f);
+    hub::AddTag<tag::CueOutro>(firstSubtitleOutro);
+    subtitlesOutro.push_back(firstSubtitleOutro);
+    subtitlesOutro.push_back(prefab::Subtitle(&LangStrings::subtitleOutro1, 5.5f));
+    for (int i = 0; i < subtitlesOutro.size() - 1; ++i) {
+        auto& sub = hub::Reg().get<SubtitleComp>(subtitlesOutro[i]);
+        sub.next = subtitlesOutro[i + 1];
     }
 
     State::Get().paused = true;
@@ -317,12 +414,16 @@ void game::OnEvent(const sapp_event* event) {
 
 void game::OnKeyDown(Key key) {
     auto& state = State::Get();
-    if (key == Key::tab) {
+    if (state.phase == GamePhase::outro) return;
+    if (key == Key::tab && state.phase != GamePhase::outro) {
         state.paused = !state.paused;
         hub::LockMouse(!state.paused);
         work::SetMusicMenuPlayed(state.paused);
         if (state.phase == GamePhase::intro) {
             work::SetMusicWindPlayed(!state.paused);
+        }
+        if (state.phase == GamePhase::instructions) {
+            work::SetMusicMenuPlayed(!state.paused);
         }
         return;
     }
@@ -360,25 +461,43 @@ void game::OnKeyDown(Key key) {
     if (key == Key::e && state.firstPerson) {
         auto* door = hub::Reg().try_get<comp::Door>(state.currentObject);
         if (door) {
-            if (door->doorState < 0.5f) {
-                door->stateDelta = 1.f;
-                auto& doorOpenSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundDoorOpen>().back());
-                doorOpenSound.Play();
-            } else {
-                door->stateDelta = -1.f;
+            if (!hub::Reg().any_of<tag::MainGate>(state.currentObject)) {
+                if (door->doorState < 0.1f && State::Get().phase != GamePhase::outro) {
+                    door->stateDelta = 1.f;
+                    auto& doorOpenSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundDoorOpen>().back());
+                    doorOpenSound.Play();
+                    if (!State::Get().furnaceDoorOpened) {
+                        State::Get().furnaceDoorOpened = true;
+                        // PLAY CUE
+                        hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+                            subtitle.running = false;
+                            subtitle.time = 0.f;
+                        });
+                        auto& sub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueFurnaceDoorOpen, SubtitleComp>().back());
+                        sub.running = true;
+                        sub.time = 0.f;
+                        // PLAY CUE
+                    }
+
+                } else {
+                    //door->stateDelta = -1.f;
+                }
             }
         }
 
         if (hub::Reg().any_of<LeverBaseComp>(state.currentObject)) {
-            tun::log("ACTIVATE LEVER!");
             if (hub::Reg().any_of<tag::LeverMainLeft>(state.currentObject)) {
                 hub::Reg().view<LeverComp, tag::LeverMainLeft>().each([] (LeverComp& lever) {
                     lever.delta = 1.f;
+                    auto& leverSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundLever>().back());
+                    leverSound.Play();
                 });
             }
             else if (hub::Reg().any_of<tag::LeverMainRight>(state.currentObject)) {
                 hub::Reg().view<LeverComp, tag::LeverMainRight>().each([] (LeverComp& lever) {
                     lever.delta = 1.f;
+                    auto& leverSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundLever>().back());
+                    leverSound.Play();
                 });
             }
         }
@@ -407,6 +526,20 @@ void game::OnKeyDown(Key key) {
                     gearTransform.Update();
                     gear.rotationSpeed = 1.f;
                     character->pickable = entt::null;
+                    auto& placementSound = hub::Reg().get<comp::Sound>(hub::Reg().view<tag::SoundPlacement>().back());
+                    placementSound.Play();
+                    if (!State::Get().firstGearIsSet) {
+                        State::Get().firstGearIsSet = true;
+                        // PLAY CUE
+                        hub::Reg().view<SubtitleComp>().each([](SubtitleComp& subtitle) {
+                            subtitle.running = false;
+                            subtitle.time = 0.f;
+                        });
+                        auto& sub = hub::Reg().get<SubtitleComp>(hub::Reg().view<tag::CueGearSet, SubtitleComp>().back());
+                        sub.running = true;
+                        sub.time = 0.f;
+                        // PLAY CUE
+                    }
                 }
             }
         }
@@ -428,6 +561,9 @@ static void OnClickPlayButton(Entity entity) {
     work::SetMusicMenuPlayed(false);
     if (State::Get().phase == GamePhase::intro) {
         work::SetMusicWindPlayed(true);
+    }
+    if (State::Get().phase == GamePhase::instructions) {
+        work::SetMusicMenuPlayed(true);
     }
 }
 
